@@ -7,7 +7,21 @@ import android.view.{MotionEvent, View}
 import org.scaloid.common.TraitView
 import rx.lang.scala.subjects.PublishSubject
 
-case class Point(x:Float, y:Float)
+case class Point(x:Float, y:Float) {
+  def angle:Option[Double] = {
+    val len = Math.sqrt(x*x + y*y)
+    val cos = if (len > 0.0) Option(x/len) else None
+    cos.map (
+      v => {
+        val acos = Math.acos(v)
+        if (y > 0.0)
+          acos
+        else
+          Math.PI * 2.0 - acos
+      }
+    )
+  }
+}
 
 class GameView(game:Game)(implicit context:Context) extends View(context) with TraitView[GameView] {
 

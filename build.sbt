@@ -24,13 +24,23 @@ libraryDependencies ++= Seq(
 run <<= run in Android
 install <<= install in Android
 
+val specs2V = "3.8.3"
+val scalaMockV = "3.2.2"
+val rxScalaV = "0.26.2"
+val scalacheckV = "1.13.2"
+
 // Tests //////////////////////////////
 
 libraryDependencies ++= Seq(
   "org.apache.maven" % "maven-ant-tasks" % "2.1.3" % "test",
   "org.robolectric" % "robolectric" % "3.0" % "test",
   "junit" % "junit" % "4.12" % "test",
-  "com.novocode" % "junit-interface" % "0.11" % "test"
+  "com.novocode" % "junit-interface" % "0.11" % "test",
+"org.scalacheck" %% "scalacheck" % scalacheckV % "test",
+"org.specs2" %% "specs2-core" % specs2V % "test",
+  "org.scalactic" %% "scalactic" % "3.0.4" % "test",
+  "org.scalatest" %% "scalatest" % "3.0.4" % "test",
+"org.scalamock" %% "scalamock-scalatest-support" % scalaMockV % "test"
 )
 
 // without this, @Config throws an exception,
