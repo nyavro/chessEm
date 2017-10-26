@@ -1,5 +1,12 @@
 package com.nyavro
 
+trait Direction
+
+case object North extends Direction
+case object East extends Direction
+case object South extends Direction
+case object West extends Direction
+
 trait Piece {
   def rank: Int
 }
@@ -24,28 +31,46 @@ case object Knight extends Piece {
   override val rank = 4
 }
 
-case object Pawn extends Piece {
+case class Pawn(direction:Direction) extends Piece {
   override val rank = 5
 }
 
-case class Cell(row:Int, col:Int, piece:Option[Piece])
+class Board(val cells:List[List[Option[Piece]]]) {
 
-class Board(freeCells:Set[(Int,Int)], val cells:List[(Int, Int, Piece)]) {
-  def put(cell:(Int, Int), piece:Piece):Option[Board] =
-    if (freeCells.contains(cell)) {
-      Option(new Board(freeCells-cell, (cell._1, cell._2, piece)::cells))
-    }  else {
-      None
+  private def transpose() = {
+    cells
+  }
+
+  def replace[A](list:List[A], index:Int, v:A):List[A] = {
+    val (pre, post) = list.splitAt(index)
+    pre ++ (v::post.drop(1))
+  }
+
+  def move(direction: Gesture): Board = {
+    direction match {
+      case Up => {}
+      case _ => {}
     }
+    this
+  }
+
+  def put(row:Int, col:Int)(piece:Piece):Option[Board] = {
+    val (pre, post) = cells.splitAt(row)
+    post.headOption.map (v => new Board(pre ++ (replace(v, col, Option(piece))::post.tail)))
+  }
+
+  override def toString:String = cells.toString
 }
 
 object Board {
   val MaxSize = 10
 
-  def apply(rows:Int, cols:Int): Unit = {
+  def apply(rows:Int, cols:Int): Board = {
     require(rows>0 && rows <= MaxSize)
     require(cols>0 && cols <= MaxSize)
-    new Board((0 until rows).flatMap(row => (0 until cols).map(col => (row, col))).toSet, Nil)
+    new Board(
+      List.fill(rows)(List.fill(cols)(Option.empty[Piece]))
+    )
   }
 }
 
@@ -55,5 +80,4 @@ class Game(config:GameConfig) {
 
   def dimensions():(Int,Int) = (config.rows, config.cols)
 
-  def cells():List[Cell] = List()
 }
