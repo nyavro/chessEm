@@ -1,43 +1,32 @@
 package com.nyavro
 
 trait Gesture
-
 trait LinearGesture extends Gesture
+trait ComplexGesture extends Gesture
 
-case object Up extends LinearGesture
-case object UpRight extends LinearGesture
-case object Right extends LinearGesture
-case object RightDown extends LinearGesture
-case object Down extends LinearGesture
-case object DownLeft extends LinearGesture
-case object Left extends LinearGesture
-case object LeftUp extends LinearGesture
+trait SimpleGesture extends LinearGesture
+trait PerspectiveGesture extends LinearGesture
 
-case object RightAndUp extends Gesture
-case object RightAndDown extends Gesture
-case object DownAndRight extends Gesture
-case object DownAndLeft extends Gesture
-case object LeftAndUp extends Gesture
-case object LeftAndDown extends Gesture
-case object UpAndRight extends Gesture
-case object UpAndLeft extends Gesture
+trait RightArea
+trait LeftArea
+trait UpArea
+trait DownArea
 
-object LinearGesture {
+case object Up extends PerspectiveGesture with UpArea
+case object Right extends PerspectiveGesture with RightArea
+case object Down extends PerspectiveGesture with DownArea
+case object Left extends PerspectiveGesture with LeftArea
 
-  val SectorHalfAngle = Math.PI/8.0
+case object UpRight extends SimpleGesture with RightArea with UpArea
+case object RightDown extends SimpleGesture with RightArea with DownArea
+case object DownLeft extends SimpleGesture with LeftArea with DownArea
+case object LeftUp extends SimpleGesture with LeftArea with UpArea
 
-  def byAngle(angle: Double)(rejectInterval:Double = 0.0):Option[LinearGesture] = {
-    val index = ((8.0*angle + Math.PI) / (2.0*Math.PI)).floor.toInt % 8
-    val res = Array(Right, UpRight, Up, LeftUp, Left, DownLeft, Down, RightDown).apply(index)
-    if (rejectInterval > 0.0) {
-      val minAngle = SectorHalfAngle*(index*2.0 - 1.0)
-      val maxAngle = minAngle + 2*SectorHalfAngle
-      val restrictions =
-        if (index > 0) List((minAngle+rejectInterval, maxAngle-rejectInterval))
-        else List((0, SectorHalfAngle-rejectInterval), (2.0*Math.PI - SectorHalfAngle + rejectInterval, 2.0*Math.PI))
-      if (restrictions.exists{case (min, max) => angle <= max && angle > min}) Option(res)
-      else None
-    }
-    else Option(res)
-  }
-}
+case object RightAndUp extends ComplexGesture
+case object RightAndDown extends ComplexGesture
+case object DownAndRight extends ComplexGesture
+case object DownAndLeft extends ComplexGesture
+case object LeftAndUp extends ComplexGesture
+case object LeftAndDown extends ComplexGesture
+case object UpAndRight extends ComplexGesture
+case object UpAndLeft extends ComplexGesture

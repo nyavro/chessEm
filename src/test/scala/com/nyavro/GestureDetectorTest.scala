@@ -7,13 +7,18 @@ class GestureDetectorTest extends WordSpecLike with Matchers with BeforeAndAfter
 
   "GestureStream" should {
     "translate stream of directions into stream of gestures: up" in {
-      samples("up").foreach {
-        sample => new GestureStream(Observable.from(sample), Math.PI/16.0).detect().toList.toBlocking.single should === (List(Up))
+      samples("up").zipWithIndex.foreach {
+        case (sample,index) => (new GestureStream(Observable.from(sample)).detect().toList.toBlocking.single, index) should === (List(Up), index)
       }
     }
     "translate stream of directions into stream of gestures: upRight" in {
-      samples("ur").foreach {
-        sample => new GestureStream(Observable.from(sample), Math.PI/16.0).detect().toList.toBlocking.single should === (List(UpAndRight))
+      samples("ur").zipWithIndex.foreach {
+        case (sample,index) => (new GestureStream(Observable.from(sample)).detect().toList.toBlocking.single, index) should === (List(UpRight), index)
+      }
+    }
+    "translate stream of directions into stream of gestures: upAndRight" in {
+      samples("u_r").zipWithIndex.foreach {
+        case (sample,index) => (new GestureStream(Observable.from(sample)).detect().toList.toBlocking.single, index) should === (List(UpAndRight), index)
       }
     }
   }
