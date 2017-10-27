@@ -24,5 +24,24 @@ class Table[+A](val values:List[List[A]]) {
 
   def rotate3():Table[A] = rotate2().rotate()
 
+  def diagonals():List[List[A]] = {
+    val (a,b) = values.foldLeft(List.empty[List[A]], List.fill(values.headOption.fold(0)(_.size))(List.empty[A])) {
+      case ((res, acc), row) =>
+        row.zip(acc).map {case (r, t) => r::t} match {
+          case (head::tail) => (head::res, tail ++ List(List.empty[A]))
+          case _ => (res, List(List.empty[A]))
+        }
+    }
+    a.reverse ++ b.take(b.length-1)
+  }
+
   override def toString:String = values.map(_.mkString(",")).mkString(";")
+}
+
+object Table {
+  def fromDiagonals[A](diagonals:List[List[A]], rows:Int, cols:Int) = {
+    new Table(
+      diagonals
+    )
+  }
 }
