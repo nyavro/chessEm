@@ -35,29 +35,31 @@ case class Pawn(direction:Direction) extends Piece {
   override val rank = 5
 }
 
-class Board(val cells:List[List[Option[Piece]]]) {
-
-  private def transpose() = {
-    cells
-  }
-
-  def replace[A](list:List[A], index:Int, v:A):List[A] = {
-    val (pre, post) = list.splitAt(index)
-    pre ++ (v::post.drop(1))
-  }
+class Board(val cells:Table[Option[Piece]]) {
 
   def move(direction: Gesture): Board = {
     direction match {
-      case Up => {}
-      case _ => {}
+      case Up => new Board(new Table(cells.rotate().values.map {
+        case row if row.last.isEmpty && row.contains(Some(Pawn(North))) => (None::row).init
+        case row => row
+      }).rotate3())
+      case Down => new Board(new Table(cells.rotate3().values.map {
+        case row if row.last.isEmpty && row.contains(Some(Pawn(South))) => (None::row).init
+        case row => row
+      }).rotate())
+      case Right => new Board(new Table(cells.values.map {
+        case row if row.last.isEmpty && row.contains(Some(Pawn(East))) => (None::row).init
+        case row => row
+      }))
+      case Left => new Board(new Table(cells.rotate2().values.map {
+        case row if row.last.isEmpty && row.contains(Some(Pawn(West))) => (None::row).init
+        case row => row
+      }).rotate2())
+      case _ => this
     }
-    this
   }
 
-  def put(row:Int, col:Int)(piece:Piece):Option[Board] = {
-    val (pre, post) = cells.splitAt(row)
-    post.headOption.map (v => new Board(pre ++ (replace(v, col, Option(piece))::post.tail)))
-  }
+  def put(row:Int, col:Int)(piece:Piece):Option[Board] = cells.put(row, col)(Option(piece)).map(new Board(_))
 
   override def toString:String = cells.toString
 }
@@ -68,9 +70,7 @@ object Board {
   def apply(rows:Int, cols:Int): Board = {
     require(rows>0 && rows <= MaxSize)
     require(cols>0 && cols <= MaxSize)
-    new Board(
-      List.fill(rows)(List.fill(cols)(Option.empty[Piece]))
-    )
+    new Board(new Table(List.fill(rows)(List.fill(cols)(Option.empty[Piece]))))
   }
 }
 
