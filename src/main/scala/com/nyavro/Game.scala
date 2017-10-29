@@ -1,11 +1,22 @@
 package com.nyavro
-
 trait Direction
 
 case object North extends Direction
 case object East extends Direction
 case object South extends Direction
 case object West extends Direction
+
+trait Movable {
+  def stepsCount(): Int
+  def canMerge(that:Movable) = false
+  def merge(that:Movable):Movable = this
+
+  override def toString: String = stepsCount().toString
+  override def equals(obj: scala.Any): Boolean = obj match {
+    case that:Movable => stepsCount() == that.stepsCount()
+    case _ => false
+  }
+}
 
 trait Piece {
   def rank: Int
@@ -39,22 +50,22 @@ class Board(val cells:Table[Option[Piece]]) {
 
   def move(direction: Gesture): Board = {
     direction match {
-      case Up => new Board(new Table(cells.rotate().values.map {
+      case Up => new Board(cells.rotate().map {
         case row if row.last.isEmpty && row.contains(Some(Pawn(North))) => (None::row).init
         case row => row
-      }).rotate3())
-      case Down => new Board(new Table(cells.rotate3().values.map {
+      }.rotate3())
+      case Down => new Board(cells.rotate3().map {
         case row if row.last.isEmpty && row.contains(Some(Pawn(South))) => (None::row).init
         case row => row
-      }).rotate())
-      case Right => new Board(new Table(cells.values.map {
+      }.rotate())
+      case Right => new Board(cells.map {
         case row if row.last.isEmpty && row.contains(Some(Pawn(East))) => (None::row).init
         case row => row
-      }))
-      case Left => new Board(new Table(cells.rotate2().values.map {
+      })
+      case Left => new Board(cells.rotate2().map {
         case row if row.last.isEmpty && row.contains(Some(Pawn(West))) => (None::row).init
         case row => row
-      }).rotate2())
+      }.rotate2())
       case _ => this
     }
   }
@@ -70,7 +81,7 @@ object Board {
   def apply(rows:Int, cols:Int): Board = {
     require(rows>0 && rows <= MaxSize)
     require(cols>0 && cols <= MaxSize)
-    new Board(new Table(List.fill(rows)(List.fill(cols)(Option.empty[Piece]))))
+    new Board(List.fill(rows)(List.fill(cols)(Option.empty[Piece])))
   }
 }
 

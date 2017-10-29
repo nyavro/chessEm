@@ -1,17 +1,5 @@
 package com.nyavro
 
-trait Movable {
-  def stepsCount(): Int
-  def canMerge(that:Movable) = false
-  def merge(that:Movable):Movable = this
-
-  override def toString: String = stepsCount().toString
-  override def equals(obj: scala.Any): Boolean = obj match {
-    case that:Movable => stepsCount() == that.stepsCount()
-    case _ => false
-  }
-}
-
 class Crowd(val list:List[Option[Movable]]){
   def move():Crowd = {
     val (moved,_) = list.foldLeft(List.empty[Option[Movable]], 0) {

@@ -63,3 +63,14 @@ val zz = merge(List(1,2), List(List(3, 4), List(5,6), List(7,8)), 3)
 val xx = list.foldLeft(-3, List.fill(4)(List.empty[Int])) {
   case ((off, acc), item) => (off+1, merge(item, acc, off))
 }
+
+val lst = List(
+  List(1,2),
+  List(3,4),
+  List(5,6)
+)
+val intses = List.fill(lst.head.size)(List.empty[Int])
+lst.foldRight(intses) {
+  case (item, acc) => item.zip(acc).map {case (i, a) => i::a}
+}
+
