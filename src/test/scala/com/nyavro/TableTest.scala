@@ -57,5 +57,42 @@ class TableTest extends WordSpecLike with Matchers with BeforeAndAfterAll {
         )
       )
     }
+    "can be created from minor diagonals" in {
+      Table.fromMinorDiagonals(List(List(1)), 1).values should === (List(List(1)))
+      Table.fromMinorDiagonals(List(List(2),List(1,4), List(3)), 2).values should === (List(List(1,2), List(3,4)))
+      Table.fromMinorDiagonals(
+        List(
+          List(3),
+          List(2,7),
+          List(1,6,11),
+          List(0,5,10),
+          List(4,9),
+          List(8)
+        ), 3
+      ).values should === (
+        List(
+          List(0,1,2,3),
+          List(4,5,6,7),
+          List(8,9,10,11)
+        )
+      )
+      Table.fromMinorDiagonals(
+        List(
+          List(5),
+          List(3,8),
+          List(2,7,12),
+          List(1,6,11),
+          List(0,5,10),
+          List(4,9),
+          List(8)
+        ), 3
+      ).values should === (
+        List(
+          List(0,1,2,3,5),
+          List(4,5,6,7,8),
+          List(8,9,10,11,12)
+        )
+      )
+    }
   }
 }
