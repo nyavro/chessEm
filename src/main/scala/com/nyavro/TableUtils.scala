@@ -16,9 +16,9 @@ class TableUtils[A](values:Table[A]) {
     post.headOption.map (v => pre ++ (replace(v, col, value)::post.tail))
   }
 
-  def rotate():Table[A] = values.foldLeft(List.fill(values.head.size)(List.empty[A]))(flip(insertColumn))
+  def rotate():Table[A] = values.foldLeft(List.fill(values.headOption.fold(0)(_.size))(List.empty[A]))(flip(insertColumn))
 
-  def transpose():Table[A] = values.foldRight(List.fill(values.head.size)(List.empty[A]))(insertColumn)
+  def transpose():Table[A] = values.foldRight(List.fill(values.headOption.fold(0)(_.size))(List.empty[A]))(insertColumn)
 
   def rotate2():Table[A] = values.reverse.map(_.reverse)
 

@@ -5,6 +5,9 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 class TableTest extends WordSpecLike with Matchers with BeforeAndAfterAll {
 
   "Table" should {
+    "Rotate left" in {
+      List[List[Int]]().rotate() should === (List())
+    }
     "Return list of diagonals" in {
       List().diagonals() should === (List())
       List(List()).diagonals() should === (List())

@@ -4,65 +4,72 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 class CrowdTest extends WordSpecLike with Matchers with BeforeAndAfterAll {
 
+  trait ComparableMovable extends Movable {
+    override def equals(obj: scala.Any):Boolean = obj match {
+      case m: Movable => toString == m.toString
+      case _ => false
+    }
+  }
+
   "Crowd" should {
     "Do nothing on empty list" in {
-      Crowd[Movable](None, None, None, None, None).move() should === (Crowd(None, None, None, None, None))
-      Crowd[Movable](None, None, None, None).move() should === (Crowd(None, None, None, None))
-      Crowd[Movable](None, None, None).move() should === (Crowd(None, None, None))
-      Crowd[Movable](None, None).move() should === (Crowd(None, None))
-      Crowd[Movable](None).move() should === (Crowd(None))
+      Crowd[Movable](North, None, None, None, None, None).move() should === (Crowd(North, None, None, None, None, None))
+      Crowd[Movable](North, None, None, None, None).move() should === (Crowd(North, None, None, None, None))
+      Crowd[Movable](North, None, None, None).move() should === (Crowd(North, None, None, None))
+      Crowd[Movable](North, None, None).move() should === (Crowd(North, None, None))
+      Crowd[Movable](North, None).move() should === (Crowd(North, None))
     }
     "Not move if can't do any moves" in {
-      val v = new Movable {val stepsCount = 0}
-      Crowd(None, None, Some(v), None, None).move() should === (Crowd(None, None, Some(v), None, None))
-      Crowd(Some(v), None, None).move() should === (Crowd(Some(v), None, None))
-      Crowd(None, None, Some(v)).move() should === (Crowd(None, None, Some(v)))
+      val v = new Movable {def stepsCount(direction:Direction) = 0}
+      Crowd(North, None, None, Some(v), None, None).move() should === (Crowd(North, None, None, Some(v), None, None))
+      Crowd(North, Some(v), None, None).move() should === (Crowd(North, Some(v), None, None))
+      Crowd(North, None, None, Some(v)).move() should === (Crowd(North, None, None, Some(v)))
     }
     "Move one cell forward" in {
-      val v = new Movable {val stepsCount = 1}
-      Crowd(None, Some(v), None, None).move() should === (Crowd(Some(v), None, None, None))
-      Crowd(Some(v), None, None).move() should === (Crowd(Some(v), None, None))
-      Crowd(None, None, Some(v)).move() should === (Crowd(None, Some(v), None))
+      val v = new Movable {def stepsCount(direction:Direction) = 1}
+      Crowd(North, None, Some(v), None, None).move() should === (Crowd(North, Some(v), None, None, None))
+      Crowd(North, Some(v), None, None).move() should === (Crowd(North, Some(v), None, None))
+      Crowd(North, None, None, Some(v)).move() should === (Crowd(North, None, Some(v), None))
     }
     "Move max possible cells forward" in {
-      val v = new Movable {val stepsCount = 3}
-      Crowd(None, None, None, None, Some(v), None, None).move() should === (Crowd(None, Some(v), None, None, None, None, None))
-      Crowd(None, None, None, Some(v), None, None).move() should === (Crowd(Some(v), None, None, None, None, None))
-      Crowd(None, None, Some(v), None, None).move() should === (Crowd(Some(v), None, None, None, None))
-      Crowd(None, Some(v), None, None).move() should === (Crowd(Some(v), None, None, None))
-      Crowd(Some(v), None, None).move() should === (Crowd(Some(v), None, None))
-      Crowd(Some(v), None).move() should === (Crowd(Some(v), None))
-      Crowd(Some(v)).move() should === (Crowd(Some(v)))
+      val v = new Movable {def stepsCount(direction:Direction) = 3}
+      Crowd(North, None, None, None, None, Some(v), None, None).move() should === (Crowd(North, None, Some(v), None, None, None, None, None))
+      Crowd(North, None, None, None, Some(v), None, None).move() should === (Crowd(North, Some(v), None, None, None, None, None))
+      Crowd(North, None, None, Some(v), None, None).move() should === (Crowd(North, Some(v), None, None, None, None))
+      Crowd(North, None, Some(v), None, None).move() should === (Crowd(North, Some(v), None, None, None))
+      Crowd(North, Some(v), None, None).move() should === (Crowd(North, Some(v), None, None))
+      Crowd(North, Some(v), None).move() should === (Crowd(North, Some(v), None))
+      Crowd(North, Some(v)).move() should === (Crowd(North, Some(v)))
     }
     "Move unlimited movable" in {
-      val v = new Movable {val stepsCount:Int = Integer.MAX_VALUE}
-      Crowd(None, None, None, None, None, None, Some(v)).move() should === (Crowd(Some(v), None, None, None, None, None, None))
-      Crowd(None, None, None, None, None, Some(v)).move() should === (Crowd(Some(v), None, None, None, None, None))
-      Crowd(None, None, None, None, Some(v)).move() should === (Crowd(Some(v), None, None, None, None))
-      Crowd(None, None, None, Some(v)).move() should === (Crowd(Some(v), None, None, None))
-      Crowd(None, None, Some(v)).move() should === (Crowd(Some(v), None, None))
-      Crowd(None, Some(v)).move() should === (Crowd(Some(v), None))
-      Crowd(Some(v)).move() should === (Crowd(Some(v)))
+      val v = new Movable {def stepsCount(direction:Direction) = Integer.MAX_VALUE}
+      Crowd(North, None, None, None, None, None, None, Some(v)).move() should === (Crowd(North, Some(v), None, None, None, None, None, None))
+      Crowd(North, None, None, None, None, None, Some(v)).move() should === (Crowd(North, Some(v), None, None, None, None, None))
+      Crowd(North, None, None, None, None, Some(v)).move() should === (Crowd(North, Some(v), None, None, None, None))
+      Crowd(North, None, None, None, Some(v)).move() should === (Crowd(North, Some(v), None, None, None))
+      Crowd(North, None, None, Some(v)).move() should === (Crowd(North, Some(v), None, None))
+      Crowd(North, None, Some(v)).move() should === (Crowd(North, Some(v), None))
+      Crowd(North, Some(v)).move() should === (Crowd(North, Some(v)))
     }
     "Move several movables" in {
-      val one = new Movable {val stepsCount = 1}
-      val two = new Movable {val stepsCount = 2}
-      val unlimited = new Movable {val stepsCount:Int = Integer.MAX_VALUE}
-      Crowd(None, None, None, Option(two), None, None, Option(one), None, None, None, None, Option(unlimited)).move() should === (Crowd(None, Option(two), None, None, None, Option(one), Option(unlimited), None, None, None, None, None))
-      Crowd(None, None, None, None, None, Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(None, None, None, None, Option(one), Option(two), Option(unlimited), None, None, None, None, None))
-      Crowd(None, None, None, None, Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(None, None, None, Option(one), Option(two), Option(unlimited), None, None, None, None, None))
-      Crowd(None, None, None, Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(None, None, Option(one), Option(two), Option(unlimited), None, None, None, None, None))
-      Crowd(None, None, Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(None, Option(one), Option(two), Option(unlimited), None, None, None, None, None))
-      Crowd(None, Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(Option(one), Option(two), Option(unlimited), None, None, None, None, None))
-      Crowd(Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(Option(one), Option(two), Option(unlimited), None, None, None, None))
-      Crowd(Option(one), Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(Option(one), Option(two), Option(unlimited), None, None, None))
-      Crowd(Option(one), Option(two), None, None, Option(unlimited)).move() should === (Crowd(Option(one), Option(two), Option(unlimited), None, None))
-      Crowd(Option(one), Option(two), None, Option(unlimited)).move() should === (Crowd(Option(one), Option(two), Option(unlimited), None))
-      Crowd(Option(one), Option(two), Option(unlimited)).move() should === (Crowd(Option(one), Option(two), Option(unlimited)))
+      val one = new Movable {def stepsCount(direction:Direction) = 1}
+      val two = new Movable {def stepsCount(direction:Direction) = 2}
+      val unlimited = new Movable {def stepsCount(direction:Direction) = Integer.MAX_VALUE}
+      Crowd(North, None, None, None, Option(two), None, None, Option(one), None, None, None, None, Option(unlimited)).move() should === (Crowd(North, None, Option(two), None, None, None, Option(one), Option(unlimited), None, None, None, None, None))
+      Crowd(North, None, None, None, None, None, Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(North, None, None, None, None, Option(one), Option(two), Option(unlimited), None, None, None, None, None))
+      Crowd(North, None, None, None, None, Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(North, None, None, None, Option(one), Option(two), Option(unlimited), None, None, None, None, None))
+      Crowd(North, None, None, None, Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(North, None, None, Option(one), Option(two), Option(unlimited), None, None, None, None, None))
+      Crowd(North, None, None, Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(North, None, Option(one), Option(two), Option(unlimited), None, None, None, None, None))
+      Crowd(North, None, Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(North, Option(one), Option(two), Option(unlimited), None, None, None, None, None))
+      Crowd(North, Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(North, Option(one), Option(two), Option(unlimited), None, None, None, None))
+      Crowd(North, Option(one), Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(North, Option(one), Option(two), Option(unlimited), None, None, None))
+      Crowd(North, Option(one), Option(two), None, None, Option(unlimited)).move() should === (Crowd(North, Option(one), Option(two), Option(unlimited), None, None))
+      Crowd(North, Option(one), Option(two), None, Option(unlimited)).move() should === (Crowd(North, Option(one), Option(two), Option(unlimited), None))
+      Crowd(North, Option(one), Option(two), Option(unlimited)).move() should === (Crowd(North, Option(one), Option(two), Option(unlimited)))
     }
     "Merge movables" in {
-      class One extends Movable {
-        val stepsCount = 1
+      class One extends ComparableMovable {
+        def stepsCount(direction:Direction) = 1
         override def canMerge(that: Movable): Boolean = that match {
           case _:One => true
           case _ => false
@@ -71,9 +78,10 @@ class CrowdTest extends WordSpecLike with Matchers with BeforeAndAfterAll {
           case _:One => new Two
           case _ => throw new IllegalStateException("Illegal state one")
         }
+        override def toString = "one"
       }
-      class Two extends Movable {
-        val stepsCount = 2
+      class Two extends ComparableMovable {
+        def stepsCount(direction:Direction) = 2
         override def canMerge(that: Movable): Boolean = {
           that match {
             case _: Two => true
@@ -84,9 +92,10 @@ class CrowdTest extends WordSpecLike with Matchers with BeforeAndAfterAll {
           case _:Two => new Four
           case _ => throw new IllegalStateException("Illegal state two")
         }
+        override def toString = "two"
       }
-      class Four extends Movable {
-        val stepsCount = 4
+      class Four extends ComparableMovable {
+        def stepsCount(direction:Direction) = 4
         override def canMerge(that: Movable): Boolean = that match {
           case _:Four => true
           case _ => false
@@ -95,18 +104,20 @@ class CrowdTest extends WordSpecLike with Matchers with BeforeAndAfterAll {
           case _:Four => new Unlimited
           case _ => throw new IllegalStateException("Illegal state four")
         }
+        override def toString = "one"
       }
-      class Unlimited extends Movable {
-        val stepsCount:Int = Integer.MAX_VALUE
+      class Unlimited extends ComparableMovable {
+        def stepsCount(direction:Direction) = Integer.MAX_VALUE
         override def merge(that: Movable) = throw new IllegalStateException("Illegal state unlimited")
+        override def toString = "one"
       }
       val one = new One
       val two = new Two
       val four = new Four
       val unlimited = new Unlimited
-      Crowd(None, Option(two), Option(two), None, Option(one), None, None, None, None, Option(unlimited)).move() should === (Crowd(Option(four), None, None, Option(one), Option(unlimited), None, None, None, None, None))
-      Crowd(None, Option(two), None, Option(two), None, Option(one), None, None, None, None, Option(unlimited)).move() should === (Crowd(Option(two), Option(two), None, None, Option(one), Option(unlimited), None, None, None, None, None))
-      Crowd(Option(two), Option(two), None, None, Option(one), Option(unlimited), None, None, None, None, None).move() should === (Crowd(Option(four), None, None, Option(one), Option(unlimited), None, None, None, None, None, None))
+      Crowd(North, None, Option(two), Option(two), None, Option(one), None, None, None, None, Option(unlimited)).move().list should === (Crowd(North, Option(four), None, None, Option(one), Option(unlimited), None, None, None, None, None).list)
+      Crowd(North, None, Option(two), None, Option(two), None, Option(one), None, None, None, None, Option(unlimited)).move().list should === (Crowd(North, Option(two), Option(two), None, None, Option(one), Option(unlimited), None, None, None, None, None).list)
+      Crowd(North, Option(two), Option(two), None, None, Option(one), Option(unlimited), None, None, None, None, None).move().list should === (Crowd(North, Option(four), None, None, Option(one), Option(unlimited), None, None, None, None, None, None).list)
     }
   }
 }
