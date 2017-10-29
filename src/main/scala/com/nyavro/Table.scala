@@ -39,9 +39,21 @@ class Table[+A](val values:List[List[A]]) {
 }
 
 object Table {
-  def fromDiagonals[A](diagonals:List[List[A]], rows:Int, cols:Int) = {
+  def fromDiagonals[A](diagonals:List[List[A]], cols:Int):Table[A] = {
     new Table(
-      diagonals
+      {
+        val (start, rest) = diagonals
+          .map(_.reverse).splitAt(cols)
+        val (a, b) = (rest ++ List(List())).foldLeft(start, List.empty[List[A]]) {
+          case ((buf, res), item) =>
+            val (col, rest) = buf.foldLeft(List.empty[A], List.empty[List[A]]) {
+              case ((hs, ts), h :: t) => (h :: hs, t :: ts)
+              case ((hs, ts), _) => (hs, ts)
+            }
+            ((item :: rest).reverse.drop(1), col :: res)
+        }
+        b.reverse.map(_.reverse)
+      }
     )
   }
 }
