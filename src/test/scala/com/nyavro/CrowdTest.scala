@@ -12,61 +12,77 @@ class CrowdTest extends WordSpecLike with Matchers with BeforeAndAfterAll {
     override def merge(that: Movable):Movable = this
   }
 
+  private def parse[A <: Movable](direction:Gesture, str:String,
+                                  a:Option[A]=None, b:Option[A]=None, c:Option[A]=None, d:Option[A]=None) =
+    Crowd[A](
+      direction,
+      str.toList.map {
+        case '-' => None
+        case 'a' => a
+        case 'b' => b
+        case 'c' => c
+        case 'd' => d
+        case _ => None
+      }
+    )
+
   "Crowd" should {
     "Do nothing on empty list" in {
-      Crowd[Movable](Up, None, None, None, None, None).move() should === (Crowd(Up, None, None, None, None, None))
-      Crowd[Movable](Up, None, None, None, None).move() should === (Crowd(Up, None, None, None, None))
-      Crowd[Movable](Up, None, None, None).move() should === (Crowd(Up, None, None, None))
-      Crowd[Movable](Up, None, None).move() should === (Crowd(Up, None, None))
-      Crowd[Movable](Up, None).move() should === (Crowd(Up, None))
+      parse(Up, "-----").move() should === (parse(Up, "-----"))
+      parse(Up, "----").move() should === (parse(Up, "----"))
+      parse(Up, "---").move() should === (parse(Up, "---"))
+      parse(Up, "--").move() should === (parse(Up, "--"))
+      parse(Up, "-").move() should === (parse(Up, "-"))
+      parse(Up, "").move() should === (parse(Up, ""))
     }
-    "Not move if can't do any moves" in {
+    "not move if can't do any moves" in {
       val v = new TestMovable {def stepsCount(direction:Gesture) = 0}
-      Crowd(Up, None, None, Some(v), None, None).move() should === (Crowd(Up, None, None, Some(v), None, None))
-      Crowd(Up, Some(v), None, None).move() should === (Crowd(Up, Some(v), None, None))
-      Crowd(Up, None, None, Some(v)).move() should === (Crowd(Up, None, None, Some(v)))
+      parse(Up, "--a--", Some(v)).move() should === (parse(Up, "--a--", Some(v)))
+      parse(Up, "a--", Some(v)).move() should === (parse(Up, "a--", Some(v)))
+      parse(Up, "a--", Some(v)).move() should === (parse(Up, "a--", Some(v)))
+      parse(Up, "--a", Some(v)).move() should === (parse(Up, "--a", Some(v)))
     }
     "Move one cell forward" in {
       val v = new TestMovable {def stepsCount(direction:Gesture) = 1}
-      Crowd(Up, None, Some(v), None, None).move() should === (Crowd(Up, Some(v), None, None, None))
-      Crowd(Up, Some(v), None, None).move() should === (Crowd(Up, Some(v), None, None))
-      Crowd(Up, None, None, Some(v)).move() should === (Crowd(Up, None, Some(v), None))
+      parse(Up, "--a--", Some(v)).move() should === (parse(Up, "-a---", Some(v)))
+      parse(Up, "a--", Some(v)).move() should === (parse(Up, "a--", Some(v)))
+      parse(Up, "--a", Some(v)).move() should === (parse(Up, "-a-", Some(v)))
     }
     "Move max possible cells forward" in {
       val v = new TestMovable {def stepsCount(direction:Gesture) = 3}
-      Crowd(Up, None, None, None, None, Some(v), None, None).move() should === (Crowd(Up, None, Some(v), None, None, None, None, None))
-      Crowd(Up, None, None, None, Some(v), None, None).move() should === (Crowd(Up, Some(v), None, None, None, None, None))
-      Crowd(Up, None, None, Some(v), None, None).move() should === (Crowd(Up, Some(v), None, None, None, None))
-      Crowd(Up, None, Some(v), None, None).move() should === (Crowd(Up, Some(v), None, None, None))
-      Crowd(Up, Some(v), None, None).move() should === (Crowd(Up, Some(v), None, None))
-      Crowd(Up, Some(v), None).move() should === (Crowd(Up, Some(v), None))
-      Crowd(Up, Some(v)).move() should === (Crowd(Up, Some(v)))
+      parse(Up, "----a--", Some(v)).move() should === (parse(Up, "-a-----", Some(v)))
+      parse(Up, "---a--", Some(v)).move() should === (parse(Up, "a-----", Some(v)))
+      parse(Up, "--a--", Some(v)).move() should === (parse(Up, "a----", Some(v)))
+      parse(Up, "-a--", Some(v)).move() should === (parse(Up, "a---", Some(v)))
+      parse(Up, "a--", Some(v)).move() should === (parse(Up, "a--", Some(v)))
+      parse(Up, "a-", Some(v)).move() should === (parse(Up, "a-", Some(v)))
+      parse(Up, "a", Some(v)).move() should === (parse(Up, "a", Some(v)))
     }
     "Move unlimited movable" in {
       val v = new TestMovable {def stepsCount(direction:Gesture) = Integer.MAX_VALUE}
-      Crowd(Up, None, None, None, None, None, None, Some(v)).move() should === (Crowd(Up, Some(v), None, None, None, None, None, None))
-      Crowd(Up, None, None, None, None, None, Some(v)).move() should === (Crowd(Up, Some(v), None, None, None, None, None))
-      Crowd(Up, None, None, None, None, Some(v)).move() should === (Crowd(Up, Some(v), None, None, None, None))
-      Crowd(Up, None, None, None, Some(v)).move() should === (Crowd(Up, Some(v), None, None, None))
-      Crowd(Up, None, None, Some(v)).move() should === (Crowd(Up, Some(v), None, None))
-      Crowd(Up, None, Some(v)).move() should === (Crowd(Up, Some(v), None))
-      Crowd(Up, Some(v)).move() should === (Crowd(Up, Some(v)))
+      parse(Up, "------a", Some(v)).move() should === (parse(Up, "a------", Some(v)))
+      parse(Up, "-----a", Some(v)).move() should === (parse(Up, "a-----", Some(v)))
+      parse(Up, "----a", Some(v)).move() should === (parse(Up, "a----", Some(v)))
+      parse(Up, "---a", Some(v)).move() should === (parse(Up, "a---", Some(v)))
+      parse(Up, "--a", Some(v)).move() should === (parse(Up, "a--", Some(v)))
+      parse(Up, "-a", Some(v)).move() should === (parse(Up, "a-", Some(v)))
+      parse(Up, "a", Some(v)).move() should === (parse(Up, "a", Some(v)))
     }
     "Move several movables" in {
-      val one = new TestMovable {def stepsCount(direction:Gesture) = 1}
-      val two = new TestMovable {def stepsCount(direction:Gesture) = 2}
-      val unlimited = new TestMovable {def stepsCount(direction:Gesture) = Integer.MAX_VALUE}
-      Crowd(Up, None, None, None, Option(two), None, None, Option(one), None, None, None, None, Option(unlimited)).move() should === (Crowd(Up, None, Option(two), None, None, None, Option(one), Option(unlimited), None, None, None, None, None))
-      Crowd(Up, None, None, None, None, None, Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(Up, None, None, None, None, Option(one), Option(two), Option(unlimited), None, None, None, None, None))
-      Crowd(Up, None, None, None, None, Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(Up, None, None, None, Option(one), Option(two), Option(unlimited), None, None, None, None, None))
-      Crowd(Up, None, None, None, Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(Up, None, None, Option(one), Option(two), Option(unlimited), None, None, None, None, None))
-      Crowd(Up, None, None, Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(Up, None, Option(one), Option(two), Option(unlimited), None, None, None, None, None))
-      Crowd(Up, None, Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(Up, Option(one), Option(two), Option(unlimited), None, None, None, None, None))
-      Crowd(Up, Option(one), None, Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(Up, Option(one), Option(two), Option(unlimited), None, None, None, None))
-      Crowd(Up, Option(one), Option(two), None, None, None, Option(unlimited)).move() should === (Crowd(Up, Option(one), Option(two), Option(unlimited), None, None, None))
-      Crowd(Up, Option(one), Option(two), None, None, Option(unlimited)).move() should === (Crowd(Up, Option(one), Option(two), Option(unlimited), None, None))
-      Crowd(Up, Option(one), Option(two), None, Option(unlimited)).move() should === (Crowd(Up, Option(one), Option(two), Option(unlimited), None))
-      Crowd(Up, Option(one), Option(two), Option(unlimited)).move() should === (Crowd(Up, Option(one), Option(two), Option(unlimited)))
+      val o = Some(new TestMovable {def stepsCount(direction:Gesture) = 1})
+      val t = Some(new TestMovable {def stepsCount(direction:Gesture) = 2})
+      val u = Some(new TestMovable {def stepsCount(direction:Gesture) = Integer.MAX_VALUE})
+      parse(Up, "---b--a----c", o, t, u).move() should === (parse(Up, "-b---ac-----", o, t, u))
+      parse(Up, "-----a-b---c", o, t, u).move() should === (parse(Up, "----abc-----", o, t, u))
+      parse(Up, "----a-b---c", o, t, u).move() should === (parse(Up, "---abc-----", o, t, u))
+      parse(Up, "---a-b---c", o, t, u).move() should === (parse(Up, "--abc-----", o, t, u))
+      parse(Up, "--a-b---c", o, t, u).move() should === (parse(Up, "-abc-----", o, t, u))
+      parse(Up, "-a-b---c", o, t, u).move() should === (parse(Up, "abc-----", o, t, u))
+      parse(Up, "a-b---c", o, t, u).move() should === (parse(Up, "abc----", o, t, u))
+      parse(Up, "ab---c", o, t, u).move() should === (parse(Up, "abc---", o, t, u))
+      parse(Up, "ab--c", o, t, u).move() should === (parse(Up, "abc--", o, t, u))
+      parse(Up, "ab-c", o, t, u).move() should === (parse(Up, "abc-", o, t, u))
+      parse(Up, "abc", o, t, u).move() should === (parse(Up, "abc", o, t, u))
     }
     "Merge movables" in {
       class One extends TestMovable {
@@ -112,13 +128,43 @@ class CrowdTest extends WordSpecLike with Matchers with BeforeAndAfterAll {
         override def merge(that: Movable):Movable = throw new IllegalStateException("Illegal state unlimited")
         override def toString = "one"
       }
-      val one = new One
-      val two = new Two
-      val four = new Four
-      val unlimited = new Unlimited
-      Crowd(Up, None, Option(two), Option(two), None, Option(one), None, None, None, None, Option(unlimited)).move().list should === (Crowd(Up, Option(four), None, None, Option(one), Option(unlimited), None, None, None, None, None).list)
-      Crowd(Up, None, Option(two), None, Option(two), None, Option(one), None, None, None, None, Option(unlimited)).move().list should === (Crowd(Up, Option(two), Option(two), None, None, Option(one), Option(unlimited), None, None, None, None, None).list)
-      Crowd(Up, Option(two), Option(two), None, None, Option(one), Option(unlimited), None, None, None, None, None).move().list should === (Crowd(Up, Option(four), None, None, Option(one), Option(unlimited), None, None, None, None, None, None).list)
+      val o = Some(new One)
+      val t = Some(new Two)
+      val f = Some(new Four)
+      val u = Some(new Unlimited)
+      parse(Up, "-bb-a----d", o, t, f, u).move() should === (parse(Up, "c--ad-----", o, t, f, u))
+      parse(Up, "-b-b-a----d", o, t, f, u).move() should === (parse(Up, "bb--ad-----", o, t, f, u))
+      parse(Up, "bb--ad-----", o, t, f, u).move() should === (parse(Up, "c--ad------", o, t, f, u))
+    }
+    "Merge movables 2" in {
+      class One extends TestMovable {
+        def stepsCount(direction:Gesture) = Integer.MAX_VALUE
+        override def canMerge(that: Movable): Boolean = that match {
+          case _:One => true
+          case _ => false
+        }
+        override def merge(that: Movable):Movable = that match {
+          case _:One => new Two
+          case _ => throw new IllegalStateException("Illegal state one")
+        }
+        override def toString = "one"
+      }
+      class Two extends TestMovable {
+        def stepsCount(direction:Gesture) = 2
+        override def canMerge(that: Movable): Boolean = false
+        override def merge(that: Movable):Movable = throw new IllegalStateException("Illegal state two")
+        override def toString = "two"
+      }
+      class Three extends TestMovable {
+        def stepsCount(direction:Gesture) = 0
+        override def canMerge(that: Movable) = false
+        override def merge(that: Movable):Movable = throw new IllegalStateException("Illegal state two")
+
+        override def toString = "two"
+      }
+      val o = Some(new One)
+      val t = Some(new Two)
+      parse(Up, "baaabaa-", o).move() should === (parse(Up, "ba---aa-", o, t))
     }
   }
 }

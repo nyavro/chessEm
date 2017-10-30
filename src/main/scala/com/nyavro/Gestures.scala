@@ -1,26 +1,29 @@
 package com.nyavro
 
 trait Gesture
+
 trait LinearGesture extends Gesture
+
 trait ComplexGesture extends Gesture
 
-trait SimpleGesture extends LinearGesture
-trait PerspectiveGesture extends LinearGesture
+trait Diagonal extends LinearGesture
+trait Straight extends LinearGesture
 
 trait RightArea
 trait LeftArea
 trait UpArea
 trait DownArea
 
-case object Up extends PerspectiveGesture with UpArea
-case object Right extends PerspectiveGesture with RightArea
-case object Down extends PerspectiveGesture with DownArea
-case object Left extends PerspectiveGesture with LeftArea
 
-case object UpRight extends SimpleGesture with RightArea with UpArea
-case object RightDown extends SimpleGesture with RightArea with DownArea
-case object DownLeft extends SimpleGesture with LeftArea with DownArea
-case object LeftUp extends SimpleGesture with LeftArea with UpArea
+case object Up extends Straight with UpArea
+case object Right extends Straight with RightArea
+case object Down extends Straight with DownArea
+case object Left extends Straight with LeftArea
+
+case object UpRight extends RightArea with UpArea with Diagonal
+case object RightDown extends RightArea with DownArea with Diagonal
+case object DownLeft extends LeftArea with DownArea with Diagonal
+case object LeftUp extends LeftArea with UpArea with Diagonal
 
 case object RightAndUp extends ComplexGesture
 case object RightAndDown extends ComplexGesture

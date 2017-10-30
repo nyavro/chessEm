@@ -2,36 +2,7 @@ package com.nyavro
 
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
-class BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll {
-
-  private def parseBoardRow(rowString: String):List[Option[Piece]] =
-    rowString.toList.map {
-      case '-' => None
-      case 'K' => Some(King)
-      case 'q' => Some(Queen)
-      case 'r' => Some(Rook)
-      case 'b' => Some(Bishop)
-      case 'k' => Some(Knight)
-      case '^' => Some(Pawn(Up))
-      case 'v' => Some(Pawn(Down))
-      case '>' => Some(Pawn(Right))
-      case '<' => Some(Pawn(Left))
-    }
-
-  private def parseBoardRows(rows:List[String]) = new Board(rows.map(parseBoardRow))
-
-  private val testBoard = parseBoardRows(List(
-    "---v---",
-    "-q---r-",
-    "-b-k-r-",
-    "-v---<-",
-    "--->--^",
-    "b--K--^",
-    "qqvqqqv",
-    "-------",
-    "-b--b-r",
-    "--kk--b"
-  ))
+class BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with BoardParser {
 
   "Border conditions" should {
     "met" in {
@@ -158,5 +129,143 @@ class BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll {
         ).toString
       )
     }
+    "Ignore other directions moves" in {
+      bishopsBoard.move(Left).toString should === (bishopsBoard.toString)
+      bishopsBoard.move(Right).toString should === (bishopsBoard.toString)
+      bishopsBoard.move(Up).toString should === (bishopsBoard.toString)
+      bishopsBoard.move(Down).toString should === (bishopsBoard.toString)
+    }
+  }
+  "Rook only" should {
+    val rooksBoard = parseBoardRows(
+      List(
+        "-----r",
+        "--r---",
+        "-r----",
+        "----r-"
+      )
+    )
+    "Move Left" in {
+      rooksBoard.move(Left).toString should === (
+        parseBoardRows(
+          List(
+            "r-----",
+            "r-----",
+            "r-----",
+            "r-----"
+          )
+        ).toString
+      )
+    }
+    "Move Right" in {
+      rooksBoard.move(Right).toString should === (
+        parseBoardRows(
+          List(
+            "-----r",
+            "-----r",
+            "-----r",
+            "-----r"
+          )
+        ).toString
+      )
+    }
+    "Move Up" in {
+      rooksBoard.move(Up).toString should === (
+        parseBoardRows(
+          List(
+            "-rr-rr",
+            "------",
+            "------",
+            "------"
+          )
+        ).toString
+      )
+    }
+    "Move Down" in {
+      rooksBoard.move(Down).toString should === (
+        parseBoardRows(
+          List(
+            "------",
+            "------",
+            "------",
+            "-rr-rr"
+          )
+        ).toString
+      )
+    }
+    "Ignore other directions moves" in {
+      rooksBoard.move(LeftUp).toString should === (rooksBoard.toString)
+      rooksBoard.move(RightDown).toString should === (rooksBoard.toString)
+      rooksBoard.move(UpRight).toString should === (rooksBoard.toString)
+      rooksBoard.move(DownLeft).toString should === (rooksBoard.toString)
+    }
+  }
+  "All pieces" should {
+//    "Move Up" in {
+//      testBoard.move(Up).toString should === (
+//        parseBoardRows(
+//          List(
+//            "-q-vqq-",
+//            "-------",
+//            "-b-k---",
+//            "-v---<^",
+//            "-q->-q^",
+//            "b--K---",
+//            "q-vq--v",
+//            "------r",
+//            "-b--b--",
+//            "--kk--b"
+//          )
+//        ).toString
+//      )
+//    }
+//    "Move UpRight" in {
+//      testBoard.move(UpRight).toString should === (
+//        parseBoardRows(
+//          List(
+//            "--qv---",
+//            "--b--r-",
+//            "---kqr-",
+//            "-vb--<q",
+//            "--->Kb^",
+//            "--q--q^",
+//            "--v--qv",
+//            "-----b-",
+//            "------r",
+//            "--kk--b"
+//          )
+//        ).toString
+//      )
+//    }
+val testBoard = parseBoardRows(List(
+  "---v---",
+  "-q---r-",
+  "-b-k-r-",
+  "-v---<-",
+  "--->--^",
+  "b--K--^"
+//  "qqvqqqv"
+//  "-------",
+//  "-b--b-r",
+//  "--kk--b"
+))
+        "Move Right" in {
+          testBoard.move(Right).toString should === (
+            parseBoardRows(
+              List(
+                "---v---",
+                "-----qr",
+                "-b-k--r",
+                "-v---<-",
+                "---->-^",
+                "b---K-^"
+//                "-Kv-qKv"
+//                "-------",
+//                "-b--b-r",
+//                "--kk--b"
+              )
+            ).toString
+          )
+        }
   }
 }
