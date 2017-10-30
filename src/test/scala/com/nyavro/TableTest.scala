@@ -87,5 +87,10 @@ class TableTest extends WordSpecLike with Matchers with BeforeAndAfterAll {
         )
       )
     }
+    "be disasemmbled to diagonals and assembled back" in {
+      List(List(1,2,3), List(4,5,6)).diagonals().fromDiagonals(3) should === (List(List(1,2,3), List(4,5,6)))
+      List(List(1,2,3,4), List(4,5,6,7)).diagonals().fromDiagonals(4) should === (List(List(1,2,3,4), List(4,5,6,7)))
+      List(List(1,2,3,4), List(4,5,6,7), List(8,9,1,0)).diagonals().fromDiagonals(4) should === (List(List(1,2,3,4), List(4,5,6,7), List(8,9,1,0)))
+    }
   }
 }
