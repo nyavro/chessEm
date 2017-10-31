@@ -24,6 +24,16 @@ class TableUtils[A](values:Table[A]) {
 
   def rotate3():Table[A] = rotate2().rotate()
 
+  def affects():Table[(Option[A],Option[A],Option[A])] = {
+    val filled = List.fill(values.headOption.fold(0)(_.size))(Option.empty[A])
+    (filled :: (values.map(_.map(Option.apply)) ++ List(filled))).sliding(3).toList.map {
+      case List(prev, cur, next) =>
+        (None::None::prev, cur, (next ++ List(None, None)).drop(2)).zipped.map {
+          case (a,b,c) => (a,b,c)
+        }
+    }
+  }
+
   def diagonals():List[List[A]] = {
     val (a,b) = values.foldLeft(List.empty[List[A]], List.fill(values.headOption.fold(0)(_.size))(List.empty[A])) {
       case ((res, acc), row) =>

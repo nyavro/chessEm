@@ -92,5 +92,21 @@ class TableTest extends WordSpecLike with Matchers with BeforeAndAfterAll {
       List(List(1,2,3,4), List(4,5,6,7)).diagonals().fromDiagonals(4) should === (List(List(1,2,3,4), List(4,5,6,7)))
       List(List(1,2,3,4), List(4,5,6,7), List(8,9,1,0)).diagonals().fromDiagonals(4) should === (List(List(1,2,3,4), List(4,5,6,7), List(8,9,1,0)))
     }
+    "create affects table" in {
+      List(List(7)).affects() should === (List(List((None, Some(7), None))))
+      List(List(8,9)).affects() should === (List(List((None, Some(8), None), (None, Some(9), None))))
+      List(List(10,11,12), List(13,14,15)).affects() should === (
+        List(
+          List((None, Some(10), Some(15)), (None, Some(11), None), (None, Some(12), None)),
+          List((None, Some(13), None), (None, Some(14), None), (Some(10), Some(15), None))
+        )
+      )
+      List(List(1,2,3,4), List(5,6,7,8)).affects() should === (
+        List(
+          List((None, Some(1), Some(7)), (None, Some(2), Some(8)), (None, Some(3), None), (None, Some(4), None)),
+          List((None, Some(5), None), (None, Some(6), None), (Some(1), Some(7), None), (Some(2), Some(8), None))
+        )
+      )
+    }
   }
 }

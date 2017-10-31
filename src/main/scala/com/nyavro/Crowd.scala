@@ -12,7 +12,7 @@ class Crowd(direction:Gesture, val list:List[Option[Movable]]){
         val bool = option.fold(false)(item => item.exists(_.canMerge(m)))
         if(move<stepsCount && bool) {
           val maybeMovable = after.head.map(v => v.merge(m))
-          (before ++ (Option.empty[Movable] :: maybeMovable :: after.drop(1)), move)
+          (before ++ (Option.empty[Movable] :: maybeMovable :: after.drop(1)), move+1)
         }
         else {
           (before ++ (Some(m) :: after), move)

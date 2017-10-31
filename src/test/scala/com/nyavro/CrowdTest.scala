@@ -160,11 +160,12 @@ class CrowdTest extends WordSpecLike with Matchers with BeforeAndAfterAll {
         override def canMerge(that: Movable) = false
         override def merge(that: Movable):Movable = throw new IllegalStateException("Illegal state two")
 
-        override def toString = "two"
+        override def toString = "three"
       }
       val o = Some(new One)
       val t = Some(new Two)
-      parse(Up, "baaabaa-", o).move() should === (parse(Up, "ba---aa-", o, t))
+      val i = Some(new Three)
+      parse(Up, "caaacaa-", o, t, i).move() should === (parse(Up, "cba-cb--", o, t, i))
     }
   }
 }

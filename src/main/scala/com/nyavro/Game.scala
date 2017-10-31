@@ -117,6 +117,10 @@ class Board(val cells:Table[Option[Movable]]) {
             row => Crowd(LeftUp, row).move().list
           }.fromDiagonals(cells.size).rotate()
         )
+      case RightAndUp =>
+        new Board(
+          cells
+        )
       case _ => this
     }
 
