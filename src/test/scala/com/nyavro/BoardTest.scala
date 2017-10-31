@@ -359,26 +359,26 @@ class BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with B
       )
     }
     val testBoard2 = parseBoardRows(List(
-      "---v---"
-//      "-q---r-",
-//      "-b-k-r-",
-//      "-v---<-",
-//      "--->--^"
+      "---v---",
+      "-q---r-",
+      "-b-k-r-",
+      "-v---<-",
+      "--->--^"
 //      "b--K--^",
 //      "qqvqqqv",
 //      "-------",
 //      "-b--b-r",
 //      "--kk--b"
     ))
-    "Move RightAndUp" in {
-      testBoard2.move(RightAndUp).toString should === (
+    "Move DownAndLeft" in {
+      testBoard2.move(DownAndLeft).toString should === (
         parseBoardRows(
           List(
-            "---v---"
-//            "-q---r-",
-//            "-b---r-",
-//            "-v---<-",
-//            "--k>--^"
+            "---v---",
+            "-q---r-",
+            "-b---r-",
+            "-v---<-",
+            "--k>--^"
 //            "b--K--^",
 //            "qqvqqqv",
 //            "-------",

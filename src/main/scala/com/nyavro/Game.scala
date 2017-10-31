@@ -16,7 +16,10 @@ case object King extends Piece {
 
 case object Queen extends Piece {
   override def toString: String = "q"
-  override def stepsCount(direction: Gesture) = Integer.MAX_VALUE
+  override def stepsCount(direction: Gesture) = direction match {
+    case d: LinearGesture => Integer.MAX_VALUE
+    case _ => 0
+  }
   override def merge(that: Movable):Movable = King
   override def canMerge(that:Movable) = that match {
     case Queen => true
@@ -120,7 +123,7 @@ class Board(val cells:Table[Option[Movable]]) {
             row => Crowd(LeftUp, row).move().list
           }.fromDiagonals(cells.size).rotate()
         )
-      case RightAndUp =>
+      case DownAndLeft =>
         new Board(
           {
             val (evens, odds) = cells.halves()
