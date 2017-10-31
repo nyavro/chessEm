@@ -1,5 +1,7 @@
 package com.nyavro
 
+import scala.annotation.tailrec
+
 class TableUtils[A](values:Table[A]) {
 
   private def replace[T](list:List[T], index:Int, v:T):List[T] = {
@@ -32,6 +34,17 @@ class TableUtils[A](values:Table[A]) {
           case (a,b,c) => (a,b,c)
         }
     }
+  }
+
+  def halves():(Table[A], Table[A]) =
+    values.zipWithIndex.foldRight(List.empty[List[A]], List.empty[List[A]]){
+      case ((item, index), (even, odd)) => if (index%2==0) (item::even, odd) else (even, item::odd)
+    }
+
+  def fromHalves(odds:Table[A]):Table[A] = (values, odds) match {
+    case (Nil, ys) => ys
+    case (xs, Nil) => xs
+    case (x::xs, y::ys) => x::y::xs.fromHalves(ys)
   }
 
   def diagonals():List[List[A]] = {

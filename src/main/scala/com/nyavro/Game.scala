@@ -48,7 +48,10 @@ case object Bishop extends Piece {
 
 case object Knight extends Piece {
   override def toString: String = "k"
-  override def stepsCount(direction: Gesture) = 0
+  override def stepsCount(direction: Gesture) = direction match {
+    case d: ComplexGesture => 1
+    case _ => 0
+  }
   override def merge(that: Movable):Movable = Bishop
 }
 
@@ -119,7 +122,22 @@ class Board(val cells:Table[Option[Movable]]) {
         )
       case RightAndUp =>
         new Board(
-          cells
+          {
+            val (evens, odds) = cells.halves()
+            val movedEvens = evens
+              .diagonals()
+              .map {
+                row => Crowd(RightAndUp, row).move().list
+              }
+              .fromDiagonals(evens.headOption.fold(0)(_.size))
+            val movedOdds = odds
+              .diagonals()
+              .map {
+                row => Crowd(RightAndUp, row).move().list
+              }
+              .fromDiagonals(odds.headOption.fold(0)(_.size))
+            movedEvens.fromHalves(movedOdds)
+          }
         )
       case _ => this
     }
