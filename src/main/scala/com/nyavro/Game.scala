@@ -10,7 +10,10 @@ trait Piece extends Movable
 
 case object King extends Piece {
   override def toString: String = "K"
-  override def stepsCount(direction: Gesture) = 1
+  override def stepsCount(direction: Gesture) = direction match {
+    case d: LinearGesture => 1
+    case _ => 0
+  }
   override def merge(that: Movable):Movable = ???
 }
 
@@ -42,6 +45,10 @@ case object Rook extends Piece {
 
 case object Bishop extends Piece {
   override def toString: String = "b"
+  override def canMerge(that: Movable): Boolean = that match {
+    case Bishop => true
+    case _ => false
+  }
   override def stepsCount(direction: Gesture) = direction match {
     case d: Diagonal => Integer.MAX_VALUE
     case _ => 0
@@ -51,6 +58,10 @@ case object Bishop extends Piece {
 
 case object Knight extends Piece {
   override def toString: String = "k"
+  override def canMerge(that: Movable): Boolean = that match {
+    case Knight => true
+    case _ => false
+  }
   override def stepsCount(direction: Gesture) = direction match {
     case d: ComplexGesture => 1
     case _ => 0
@@ -142,7 +153,140 @@ class Board(val cells:Table[Option[Movable]]) {
             movedEvens.fromHalves(movedOdds)
           }
         )
-      case _ => this
+      case RightAndDown =>
+        new Board(
+          {
+            val (evens, odds) = cells.rotate().halves()
+            val movedEvens = evens
+              .diagonals()
+              .map {
+                row => Crowd(RightAndDown, row).move().list
+              }
+              .fromDiagonals(evens.headOption.fold(0)(_.size))
+            val movedOdds = odds
+              .diagonals()
+              .map {
+                row => Crowd(RightAndDown, row).move().list
+              }
+              .fromDiagonals(odds.headOption.fold(0)(_.size))
+            movedEvens.fromHalves(movedOdds).rotate3()
+          }
+        )
+      case UpAndRight =>
+        new Board(
+          {
+            val (evens, odds) = cells.rotate2().halves()
+            val movedEvens = evens
+              .diagonals()
+              .map {
+                row => Crowd(UpAndRight, row).move().list
+              }
+              .fromDiagonals(evens.headOption.fold(0)(_.size))
+            val movedOdds = odds
+              .diagonals()
+              .map {
+                row => Crowd(UpAndRight, row).move().list
+              }
+              .fromDiagonals(odds.headOption.fold(0)(_.size))
+            movedEvens.fromHalves(movedOdds).rotate2()
+          }
+        )
+      case LeftAndUp =>
+        new Board(
+          {
+            val (evens, odds) = cells.rotate3().halves()
+            val movedEvens = evens
+              .diagonals()
+              .map {
+                row => Crowd(LeftAndUp, row).move().list
+              }
+              .fromDiagonals(evens.headOption.fold(0)(_.size))
+            val movedOdds = odds
+              .diagonals()
+              .map {
+                row => Crowd(LeftAndUp, row).move().list
+              }
+              .fromDiagonals(odds.headOption.fold(0)(_.size))
+            movedEvens.fromHalves(movedOdds).rotate()
+          }
+        )
+      case RightAndUp =>
+        new Board(
+          {
+            val (evens, odds) = cells.transpose.halves()
+            val movedEvens = evens
+              .diagonals()
+              .map {
+                row => Crowd(RightAndUp, row).move().list
+              }
+              .fromDiagonals(evens.headOption.fold(0)(_.size))
+            val movedOdds = odds
+              .diagonals()
+              .map {
+                row => Crowd(RightAndUp, row).move().list
+              }
+              .fromDiagonals(odds.headOption.fold(0)(_.size))
+            movedEvens.fromHalves(movedOdds).transpose
+          }
+        )
+      case DownAndRight =>
+        new Board(
+          {
+            val (evens, odds) = cells.transpose.rotate().halves()
+            val movedEvens = evens
+              .diagonals()
+              .map {
+                row => Crowd(DownAndRight, row).move().list
+              }
+              .fromDiagonals(evens.headOption.fold(0)(_.size))
+            val movedOdds = odds
+              .diagonals()
+              .map {
+                row => Crowd(DownAndRight, row).move().list
+              }
+              .fromDiagonals(odds.headOption.fold(0)(_.size))
+            movedEvens.fromHalves(movedOdds).rotate3().transpose
+          }
+        )
+      case LeftAndDown =>
+        new Board(
+          {
+            val (evens, odds) = cells.transpose.rotate2().halves()
+            val movedEvens = evens
+              .diagonals()
+              .map {
+                row => Crowd(LeftAndDown, row).move().list
+              }
+              .fromDiagonals(evens.headOption.fold(0)(_.size))
+            val movedOdds = odds
+              .diagonals()
+              .map {
+                row => Crowd(LeftAndDown, row).move().list
+              }
+              .fromDiagonals(odds.headOption.fold(0)(_.size))
+            movedEvens.fromHalves(movedOdds).rotate2().transpose
+          }
+        )
+      case UpAndLeft =>
+        new Board(
+          {
+            val (evens, odds) = cells.transpose.rotate3().halves()
+            val movedEvens = evens
+              .diagonals()
+              .map {
+                row => Crowd(UpAndLeft, row).move().list
+              }
+              .fromDiagonals(evens.headOption.fold(0)(_.size))
+            val movedOdds = odds
+              .diagonals()
+              .map {
+                row => Crowd(UpAndLeft, row).move().list
+              }
+              .fromDiagonals(odds.headOption.fold(0)(_.size))
+            movedEvens.fromHalves(movedOdds).rotate().transpose
+          }
+        )
+      case _ => throw new RuntimeException("Not implemented")
     }
 
   def put(row:Int, col:Int)(piece:Piece):Option[Board] = cells.put(row, col)(Option(piece)).map(new Board(_))

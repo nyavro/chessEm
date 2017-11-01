@@ -92,21 +92,25 @@ class TableTest extends WordSpecLike with Matchers with BeforeAndAfterAll {
       List(List(1,2,3,4), List(4,5,6,7)).diagonals().fromDiagonals(4) should === (List(List(1,2,3,4), List(4,5,6,7)))
       List(List(1,2,3,4), List(4,5,6,7), List(8,9,1,0)).diagonals().fromDiagonals(4) should === (List(List(1,2,3,4), List(4,5,6,7), List(8,9,1,0)))
     }
-    "create affects table" in {
-      List(List(7)).affects() should === (List(List((None, Some(7), None))))
-      List(List(8,9)).affects() should === (List(List((None, Some(8), None), (None, Some(9), None))))
-      List(List(10,11,12), List(13,14,15)).affects() should === (
-        List(
-          List((None, Some(10), Some(15)), (None, Some(11), None), (None, Some(12), None)),
-          List((None, Some(13), None), (None, Some(14), None), (Some(10), Some(15), None))
-        )
-      )
-      List(List(1,2,3,4), List(5,6,7,8)).affects() should === (
-        List(
-          List((None, Some(1), Some(7)), (None, Some(2), Some(8)), (None, Some(3), None), (None, Some(4), None)),
-          List((None, Some(5), None), (None, Some(6), None), (Some(1), Some(7), None), (Some(2), Some(8), None))
-        )
-      )
+
+    "be disassembled to halves" in {
+      List.empty[List[Int]].halves() should === (List.empty[List[Int]], List.empty[List[Int]])
+      List(List.empty[Int]).halves() should === (List(List.empty[Int]), List.empty[List[Int]])
+      List(List.empty[Int], List.empty[Int]).halves() should === (List(List.empty[Int]), List(List.empty[Int]))
+      List(List(1), List.empty[Int]).halves() should === (List(List(1)), List(List.empty[Int]))
+      List(List(1), List(2)).halves() should === (List(List(1)), List(List(2)))
+      List(List(1,3), List(2,4,6), List(7,9)).halves() should === (List(List(1,3), List(7,9)), List(List(2,4,6)))
+      List(List(1,3), List(2,4,6), List(7,9), List(8)).halves() should === (List(List(1,3), List(7,9)), List(List(2,4,6), List(8)))
+    }
+
+    "be assembled from halves" in {
+      List.empty[List[Int]].fromHalves(List.empty[List[Int]]) should === (List.empty[List[Int]])
+      List(List.empty[Int]).fromHalves(List.empty[List[Int]]) should === (List(List.empty[Int]))
+      List(List.empty[Int]).fromHalves(List(List.empty[Int])) should === (List(List.empty[Int], List.empty[Int]))
+      List(List(1)).fromHalves(List(List.empty[Int])) should === (List(List(1), List.empty[Int]))
+      List(List(1)).fromHalves(List(List(2))) should === (List(List(1), List(2)))
+      List(List(1,3), List(7,9)).fromHalves(List(List(2,4,6))) should === (List(List(1,3), List(2,4,6), List(7,9)))
+      List(List(1,3), List(7,9)).fromHalves(List(List(2,4,6), List(8))) should === (List(List(1,3), List(2,4,6), List(7,9), List(8)))
     }
   }
 }

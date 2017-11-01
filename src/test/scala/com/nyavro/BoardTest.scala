@@ -202,10 +202,10 @@ class BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with B
   }
   "All pieces" should {
     val testBoard = parseBoardRows(List(
-      "---v---",
+      "--kv---",
       "-q---r-",
       "-b-k-r-",
-      "-v---<-",
+      "-vb--<-",
       "--->--^",
       "b--K--^",
       "qqvqqqv",
@@ -217,10 +217,10 @@ class BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with B
       testBoard.move(Up).toString should === (
         parseBoardRows(
           List(
-            "-q-vqq-",
+            "-qkvqq-",
             "-------",
             "-b-k---",
-            "-v---<^",
+            "-vb--<^",
             "-q->-q^",
             "b--K---",
             "q-vq--v",
@@ -235,10 +235,10 @@ class BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with B
       testBoard.move(UpRight).toString should === (
         parseBoardRows(
           List(
-            "--qv---",
-            "--b--r-",
+            "--kv---",
+            "-qb--r-",
             "---kqr-",
-            "-vb--<q",
+            "-vr--<q",
             "--->Kb^",
             "--q--q^",
             "--v--qv",
@@ -253,10 +253,10 @@ class BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with B
       testBoard.move(Right).toString should === (
         parseBoardRows(
           List(
-            "---v---",
+            "--kv---",
             "-----qr",
             "-b-k--r",
-            "-v---<-",
+            "-vb--<-",
             "---->-^",
             "b---K-^",
             "-Kv-qKv",
@@ -271,10 +271,10 @@ class BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with B
       testBoard.move(RightDown).toString should === (
         parseBoardRows(
           List(
-            "---v---",
+            "--kv---",
             "-----r-",
             "---k-r-",
-            "-vb--<-",
+            "-vr--<-",
             "--->--^",
             "-----q^",
             "--v-K-v",
@@ -290,10 +290,10 @@ class BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with B
       testBoard.move(Down).toString should === (
         parseBoardRows(
           List(
-            "-------",
+            "--k----",
             "-q-v---",
             "-b-k-q-",
-            "-----<-",
+            "--b--<-",
             "-v->--^",
             "b-----^",
             "---K---",
@@ -308,12 +308,12 @@ class BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with B
       testBoard.move(DownLeft).toString should === (
         parseBoardRows(
           List(
-            "---v---",
+            "--kv---",
             "-----r-",
             "q--k-r-",
             "bv---<-",
             "--->--^",
-            "b--K--^",
+            "r--K--^",
             "q-v---v",
             "q------",
             "-q-qb-r",
@@ -326,10 +326,10 @@ class BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with B
       testBoard.move(Left).toString should === (
         parseBoardRows(
           List(
-            "---v---",
+            "--kv---",
             "qr-----",
             "-b-kr--",
-            "-v--<--",
+            "-vb-<--",
             "--->--^",
             "b-K---^",
             "K-vKq-v",
@@ -344,8 +344,8 @@ class BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with B
       testBoard.move(LeftUp).toString should === (
         parseBoardRows(
           List(
-            "q--v---",
-            "b----r-",
+            "q-kv---",
+            "r----r-",
             "---k-r-",
             "qv---<-",
             "-bK>--^",
@@ -358,161 +358,149 @@ class BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with B
         ).toString
       )
     }
-    val testBoard2 = parseBoardRows(List(
-      "---v---",
-      "-q---r-",
-      "-b-k-r-",
-      "-v---<-",
-      "--->--^"
-//      "b--K--^",
-//      "qqvqqqv",
-//      "-------",
-//      "-b--b-r",
-//      "--kk--b"
-    ))
     "Move DownAndLeft" in {
-      testBoard2.move(DownAndLeft).toString should === (
+      testBoard.move(DownAndLeft).toString should === (
         parseBoardRows(
           List(
-            "---v---",
+            "--kv---",
             "-q---r-",
             "-b---r-",
-            "-v---<-",
-            "--k>--^"
-//            "b--K--^",
-//            "qqvqqqv",
-//            "-------",
-//            "-b--b-r",
-//            "--kk--b"
+            "-vb--<-",
+            "--k>--^",
+            "b--K--^",
+            "qqvqqqv",
+            "-------",
+            "-b--b-r",
+            "--kk--b"
           )
         ).toString
       )
     }
-//    "Move RightAndUp" in {
-//      testBoard.move(RightAndUp).toString should === (
-//        parseBoardRows(
-//          List(
-//            "---v---",
-//            "-q---r-",
-//            "-b-k-r-",
-//            "-v---<-",
-//            "--->--^",
-//            "b--K--^",
-//            "qqvqqqv",
-//            "-------",
-//            "-b--b-r",
-//            "--kk--b"
-//          )
-//        ).toString
-//      )
-//    }
-    //    "Move RightAndUp" in {
-    //      testBoard.move(RightAndUp).toString should === (
-    //        parseBoardRows(
-    //          List(
-    //            "---v---",
-    //            "-q---r-",
-    //            "-b-k-r-",
-    //            "-v---<-",
-    //            "--->--^",
-    //            "b--K--^",
-    //            "qqvqqqv",
-    //            "-------",
-    //            "-b--b-r",
-    //            "--kk--b"
-    //          )
-    //        ).toString
-    //      )
-    //    }
-    //    "Move RightAndUp" in {
-    //      testBoard.move(RightAndUp).toString should === (
-    //        parseBoardRows(
-    //          List(
-    //            "---v---",
-    //            "-q---r-",
-    //            "-b-k-r-",
-    //            "-v---<-",
-    //            "--->--^",
-    //            "b--K--^",
-    //            "qqvqqqv",
-    //            "-------",
-    //            "-b--b-r",
-    //            "--kk--b"
-    //          )
-    //        ).toString
-    //      )
-    //    }
-    //    "Move RightAndUp" in {
-    //      testBoard.move(RightAndUp).toString should === (
-    //        parseBoardRows(
-    //          List(
-    //            "---v---",
-    //            "-q---r-",
-    //            "-b-k-r-",
-    //            "-v---<-",
-    //            "--->--^",
-    //            "b--K--^",
-    //            "qqvqqqv",
-    //            "-------",
-    //            "-b--b-r",
-    //            "--kk--b"
-    //          )
-    //        ).toString
-    //      )
-    //    }
-    //    "Move RightAndUp" in {
-    //      testBoard.move(RightAndUp).toString should === (
-    //        parseBoardRows(
-    //          List(
-    //            "---v---",
-    //            "-q---r-",
-    //            "-b-k-r-",
-    //            "-v---<-",
-    //            "--->--^",
-    //            "b--K--^",
-    //            "qqvqqqv",
-    //            "-------",
-    //            "-b--b-r",
-    //            "--kk--b"
-    //          )
-    //        ).toString
-    //      )
-    //    }
-    //    "Move RightAndUp" in {
-    //      testBoard.move(RightAndUp).toString should === (
-    //        parseBoardRows(
-    //          List(
-    //            "---v---",
-    //            "-q---r-",
-    //            "-b-k-r-",
-    //            "-v---<-",
-    //            "--->--^",
-    //            "b--K--^",
-    //            "qqvqqqv",
-    //            "-------",
-    //            "-b--b-r",
-    //            "--kk--b"
-    //          )
-    //        ).toString
-    //      )
-    //    }
-    //    "Move RightAndUp" in {
-    //      testBoard.move(RightAndUp).toString should === (
-    //        parseBoardRows(
-    //          List(
-    //            "---v---",
-    //            "-q---r-",
-    //            "-b-k-r-",
-    //            "-v---<-",
-    //            "--->--^",
-    //            "b--K--^",
-    //            "qqvqqqv",
-    //            "-------",
-    //            "-b--b-r",
-    //            "--kk--b"
-    //          )
-    //        ).toString
-    //      )
-    //    }
+    "Move RightAndDown" in {
+      testBoard.move(RightAndDown).toString should === (
+        parseBoardRows(
+          List(
+            "---v---",
+            "-q--kr-",
+            "-b-k-r-",
+            "-vb--<-",
+            "--->--^",
+            "b--K--^",
+            "qqvqqqv",
+            "-------",
+            "-b--b-r",
+            "--kk--b"
+          )
+        ).toString
+      )
+    }
+    "Move UpAndRight" in {
+      testBoard.move(UpAndRight).toString should === (
+        parseBoardRows(
+          List(
+            "--kvk--",
+            "-q---r-",
+            "-b---r-",
+            "-vb--<-",
+            "--->--^",
+            "b--K--^",
+            "qqvqqqv",
+            "---kk--",
+            "-b--b-r",
+            "------b"
+          )
+        ).toString
+      )
+    }
+    "Move LeftAndUp" in {
+      testBoard.move(LeftAndUp).toString should === (
+        parseBoardRows(
+          List(
+            "--kv---",
+            "-q---r-",
+            "-b-k-r-",
+            "-vb--<-",
+            "--->--^",
+            "b--K--^",
+            "qqvqqqv",
+            "-------",
+            "kb--b-r",
+            "---k--b"
+          )
+        ).toString
+      )
+    }
+    "Move RightAndUp" in {
+      testBoard.move(RightAndUp).toString should === (
+        parseBoardRows(
+          List(
+            "--kv---",
+            "-q---r-",
+            "-b-k-r-",
+            "-vb--<-",
+            "--->--^",
+            "b--K--^",
+            "qqvqqqv",
+            "-------",
+            "-b--bkr",
+            "--k---b"
+          )
+        ).toString
+      )
+    }
+    "Move DownAndRight" in {
+      testBoard.move(DownAndRight).toString should === (
+        parseBoardRows(
+          List(
+            "---v---",
+            "-q---r-",
+            "-b-k-r-",
+            "-vb--<-",
+            "--->k-^",
+            "b--K--^",
+            "qqvqqqv",
+            "-------",
+            "-b--b-r",
+            "--kk--b"
+          )
+        ).toString
+      )
+    }
+    "Move LeftAndDown" in {
+      testBoard.move(LeftAndDown).toString should === (
+        parseBoardRows(
+          List(
+            "---v---",
+            "kq---r-",
+            "-b-k-r-",
+            "-vb--<-",
+            "--->--^",
+            "b--K--^",
+            "qqvqqqv",
+            "-------",
+            "-b--b-r",
+            "--kk--b"
+          )
+        ).toString
+      )
+    }
+    "Move UpAndLeft" in {
+      testBoard.move(UpAndLeft).toString should === (
+        parseBoardRows(
+          List(
+            "--bv---",
+            "-q---r-",
+            "-b---r-",
+            "-vb--<-",
+            "--->--^",
+            "b--K--^",
+            "qqvqqqv",
+            "-kk----",
+            "-b--b-r",
+            "------b"
+          )
+        ).toString
+      )
+    }
   }
 }
