@@ -40,7 +40,7 @@ libraryDependencies ++= Seq(
 "org.specs2" %% "specs2-core" % specs2V % "test",
   "org.scalactic" %% "scalactic" % "3.0.4" % "test",
   "org.scalatest" %% "scalatest" % "3.0.4" % "test",
-"org.scalamock" %% "scalamock-scalatest-support" % scalaMockV % "test"
+  "com.storm-enroute" %% "scalameter" % "0.8.2" % "test"
 )
 
 // without this, @Config throws an exception,
