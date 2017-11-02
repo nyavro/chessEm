@@ -316,8 +316,9 @@ object Board {
 
 case class GameConfig(rows:Int, cols:Int, appearanceMap:Map[Piece, List[Piece]])
 
-class Game(config:GameConfig) {
+class Game(config:GameConfig, onGesture: Gesture => Unit) {
+
+  def move(gesture: Gesture) = onGesture(gesture)
 
   def dimensions():(Int,Int) = (config.rows, config.cols)
-
 }

@@ -8,9 +8,9 @@ import org.scaloid.common.TraitView
 import rx.lang.scala.subjects.PublishSubject
 
 
-class GameView(game:Game)(implicit context:Context) extends View(context) with TraitView[GameView] {
+class GameSurface(game:Game)(implicit context:Context) extends View(context) with TraitView[GameSurface] {
 
-  override def basis: GameView = this
+  override def basis: GameSurface = this
 
   private lazy val cellBitmap: Bitmap = BitmapFactory.decodeResource(getResources, R.drawable.cell)
   private lazy val cellRect = new Rect(0, 0, cellBitmap.getWidth, cellBitmap.getHeight)
@@ -19,6 +19,14 @@ class GameView(game:Game)(implicit context:Context) extends View(context) with T
   private lazy val pawnRect = new Rect(0, 0, cellBitmap.getWidth, cellBitmap.getHeight)
 
   private val sub = PublishSubject[Option[Point]]()
+
+  new GestureStream(sub)
+    .detect()
+    .subscribe(
+      gesture => game.move(gesture),
+      err => Log.d("GameView", err.getLocalizedMessage, err),
+      () => {}
+    )
 
   val Gap = 5
 
@@ -50,25 +58,10 @@ class GameView(game:Game)(implicit context:Context) extends View(context) with T
   override def onTouchEvent(me: MotionEvent):Boolean = {
     if (me.getAction == MotionEvent.ACTION_DOWN || me.getAction == MotionEvent.ACTION_MOVE)
       sub.onNext(Option(Point(me.getX, me.getY())))
-    else if (me.getAction == MotionEvent.ACTION_UP)
+    else if (me.getAction == MotionEvent.ACTION_UP) {
       sub.onNext(None)
+      sub.onNext(None)
+    }
     true
-  }
-
-  val Threshold = 100
-//
-//  def gestures():Observable[Gesture] = {
-//    Option.empty
-//    sub
-//      .zip(sub.drop(1))
-//      .scan (Option.empty[Gesture]) {
-//        case (acc, item) => None
-//      }
-//      .flatten
-//  }
-
-  override def onScrollChanged(l: Int, t: Int, oldl: Int, oldt: Int): Unit = {
-    super.onScrollChanged(l, t, oldl, oldt)
-    Log.d("MyAppTag", s"$l $t $oldl $oldt")
   }
 }

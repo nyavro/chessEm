@@ -6,8 +6,8 @@ import org.scaloid.common._
 class ChessEm extends SActivity {
   lazy val meToo = new STextView("Me too")
   lazy val redBtn = new SButton(R.string.red)
-  lazy val game = new Game(GameConfig(6, 6, Map()))
-  lazy val gameView = new GameView(game)
+  lazy val game = new Game(GameConfig(6, 6, Map()), {gesture:Gesture => meToo.text = gesture.toString})
+  lazy val gameView = new GameSurface(game)
   lazy val gestureLayout = new SGestureOverlayView
 
   override implicit val loggerTag = LoggerTag("MyAppTag")
