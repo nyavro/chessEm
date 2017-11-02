@@ -78,6 +78,10 @@ case class Pawn(start:Gesture) extends Piece {
       case Left => "<"
       case _ => " "
     }
+  override def canMerge(that: Movable) = that match {
+    case Pawn(_) => true
+    case _ => false
+  }
   override def stepsCount(direction: Gesture) = if (direction==start) 1 else 0
   override def merge(that: Movable) = Knight
 }

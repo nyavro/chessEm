@@ -52,8 +52,8 @@ class BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with B
         parseBoardRows(
           List(
             "-v-<>-",
-            "-->-^v",
-            "<-v^-^",
+            "-->-^k",
+            "<-v^--",
             "-<--->"
           )
         ).toString
@@ -64,8 +64,8 @@ class BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with B
         parseBoardRows(
           List(
             "---<>-",
-            "-v>--v",
-            "<---^^",
+            "-v>---",
+            "<---^k",
             "-<v^->"
           )
         ).toString
