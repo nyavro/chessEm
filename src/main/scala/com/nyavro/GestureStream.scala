@@ -42,8 +42,8 @@ class GestureStream(source:Observable[Option[Point]]) {
 
 trait DetectionState {
 
-  val T = 12.0
-  val TM = 80.0
+  val T = 6.0
+  val TM = 20.0
 
   protected def score(pt:Point):Map[LinearGesture, Double] = {
     val res = Array(Right, RightDown, Down, DownLeft, Left, LeftUp, Up, UpRight)
