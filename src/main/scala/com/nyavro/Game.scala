@@ -314,11 +314,14 @@ object Board {
   }
 }
 
-case class GameConfig(rows:Int, cols:Int, appearanceMap:Map[Piece, List[Piece]])
+case class Dimensions(rows:Int, cols:Int)
 
-class Game(config:GameConfig, onGesture: Gesture => Unit) {
+case class GameConfig(dimensions: Dimensions)
 
-  def move(gesture: Gesture) = onGesture(gesture)
+class Game(val config:GameConfig, onGesture: Gesture => Unit, val board: Board) {
 
-  def dimensions():(Int,Int) = (config.rows, config.cols)
+  def move(gesture: Gesture):Game = {
+    onGesture(gesture)
+    new Game(config, onGesture, board.move(gesture))
+  }
 }

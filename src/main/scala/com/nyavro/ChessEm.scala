@@ -6,8 +6,8 @@ import org.scaloid.common._
 class ChessEm extends SActivity {
   lazy val meToo = new STextView("Me too")
   lazy val redBtn = new SButton(R.string.red)
-  lazy val game = new Game(GameConfig(6, 6, Map()), {gesture:Gesture => meToo.text = gesture.toString})
-  lazy val gameView = new GameSurface(game)
+  lazy val game = new Game(GameConfig(Dimensions(6, 6)), {gesture:Gesture => meToo.text = gesture.toString}, Board(6,6).put(1,1)(Rook).get)
+  lazy val gameSurface = new GameSurface(game)
   lazy val gestureLayout = new SGestureOverlayView
 
   override implicit val loggerTag = LoggerTag("MyAppTag")
@@ -26,7 +26,7 @@ class ChessEm extends SActivity {
         redBtn.here
       }.wrap.here
       //      SEditText("Yellow input field fills the space").fill
-      gameView.fill.here
+      gameSurface.fill.here
     } padding 20.dip
     contentView(
       main

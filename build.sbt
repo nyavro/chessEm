@@ -24,11 +24,6 @@ libraryDependencies ++= Seq(
 run <<= run in Android
 install <<= install in Android
 
-val specs2V = "3.8.3"
-val scalaMockV = "3.2.2"
-val rxScalaV = "0.26.2"
-val scalacheckV = "1.13.2"
-
 // Tests //////////////////////////////
 
 libraryDependencies ++= Seq(
@@ -36,8 +31,8 @@ libraryDependencies ++= Seq(
   "org.robolectric" % "robolectric" % "3.0" % "test",
   "junit" % "junit" % "4.12" % "test",
   "com.novocode" % "junit-interface" % "0.11" % "test",
-"org.scalacheck" %% "scalacheck" % scalacheckV % "test",
-"org.specs2" %% "specs2-core" % specs2V % "test",
+"org.scalacheck" %% "scalacheck" % "1.13.2" % "test",
+"org.specs2" %% "specs2-core" % "3.8.3" % "test",
   "org.scalactic" %% "scalactic" % "3.0.4" % "test",
   "org.scalatest" %% "scalatest" % "3.0.4" % "test",
   "com.storm-enroute" %% "scalameter" % "0.8.2" % "test"

@@ -5,54 +5,62 @@ import android.graphics._
 import android.util.Log
 import android.view.{MotionEvent, View}
 import org.scaloid.common.TraitView
+import rx.lang.scala.Observable
 import rx.lang.scala.subjects.PublishSubject
 
+case class Extents(width:Int, height:Int)
 
 class GameSurface(game:Game)(implicit context:Context) extends View(context) with TraitView[GameSurface] {
 
   override def basis: GameSurface = this
 
-  private lazy val cellBitmap: Bitmap = BitmapFactory.decodeResource(getResources, R.drawable.cell)
-  private lazy val cellRect = new Rect(0, 0, cellBitmap.getWidth, cellBitmap.getHeight)
-
-  private lazy val pawnBitmap: Bitmap = BitmapFactory.decodeResource(getResources, R.drawable.circle)
-  private lazy val pawnRect = new Rect(0, 0, cellBitmap.getWidth, cellBitmap.getHeight)
-
   private val sub = PublishSubject[Option[Point]]()
 
-  new GestureStream(sub)
-    .detect()
+  private val view = PublishSubject[GameView]
+
+  private val drw = PublishSubject[Canvas]
+
+  val gameStream:Observable[Game] =
+    new GestureStream(sub)
+      .detect()
+      .scan(game) {
+        case (gm, gesture) => gm.move(gesture)
+      }
+
+  view.map {
+      gv => gameStream.publish.refCount.map {
+        gm => (gv, gm)
+      }
+    }
+    .switch
     .subscribe(
-      gesture => game.move(gesture),
-      err => Log.d("GameView", err.getLocalizedMessage, err),
+      {case (gameView, gm) => gameView.update(gm);invalidate()},
+      err => Log.d("GameView gameStream", err.getLocalizedMessage, err),
       () => {}
     )
 
-  val Gap = 5
+  view.map {
+      gv => drw.publish.refCount.map {
+        canvas => (gv, canvas)
+      }
+    }
+    .switch
+    .subscribe(
+      {case (gameView, canvas) => gameView.draw(canvas)},
+      err => Log.d("GameView drw", err.getLocalizedMessage, err),
+      () => {}
+    )
+
+  override def onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int): Unit = {
+    super.onLayout(changed, left, top, right, bottom)
+    if(changed) {
+      view.onNext(new GameView(game.config.dimensions, Extents(getWidth, getHeight)))
+    }
+  }
 
   override def onDraw(canvas:Canvas): Unit = {
     super.onDraw(canvas)
-    val (rows, cols) = game.dimensions()
-    val (screenWidth, screenHeight) = (canvas.getWidth, canvas.getHeight)
-    val cellSize = (screenHeight/rows).min(screenWidth/cols)
-    for (r <- 0 until rows) {
-      for (c <- 0 until cols) {
-        canvas.drawBitmap(
-          cellBitmap,
-          cellRect,
-          new Rect(c*cellSize+Gap, r*cellSize+Gap, (c+1)*cellSize-Gap, (r+1)*cellSize-Gap),
-          new Paint
-        )
-      }
-    }
-    val pr = 3
-    val pc = 5
-    canvas.drawBitmap(
-      pawnBitmap,
-      pawnRect,
-      new Rect(pc*cellSize+2*Gap, pr*cellSize+2*Gap, (pc+1)*cellSize-2*Gap, (pr+1)*cellSize-2*Gap),
-      new Paint
-    )
+    drw.onNext(canvas)
   }
 
   override def onTouchEvent(me: MotionEvent):Boolean = {
