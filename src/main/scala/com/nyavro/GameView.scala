@@ -24,6 +24,15 @@ class GameView(dimensions: Dimensions, extents: Extents)(implicit context: Conte
 var gm = Option.empty[Game]
 //  private lazy val buffer: Bitmap = Bitmap.createBitmap(Math.max(1, getWidth), Math.max(1, getHeight), Bitmap.Config.ARGB_8888)
 
+  def bitmap(item: Movable):Bitmap = item match {
+    case Queen => piecesIcons("queen")
+    case King => piecesIcons("king")
+    case Rook => piecesIcons("rook")
+    case Bishop => piecesIcons("bishop")
+    case Knight => piecesIcons("knight")
+    case _ => piecesIcons("pawn")
+  }
+
   def draw(canvas: Canvas): Unit = {
     val cellSize = (extents.height/dimensions.rows).min(extents.width/dimensions.cols)
 
@@ -45,7 +54,7 @@ var gm = Option.empty[Game]
             row.zipWithIndex.foreach {
               case (Some(item), j) =>
                 canvas.drawBitmap(
-                  pawnBitmap,
+                  bitmap(item),
                   pawnRect,
                   new Rect(j*cellSize+2*Gap, i*cellSize+2*Gap, (j+1)*cellSize-2*Gap, (i+1)*cellSize-2*Gap),
                   new Paint

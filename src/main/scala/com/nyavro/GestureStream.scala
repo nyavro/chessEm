@@ -27,11 +27,11 @@ class GestureStream(source:Observable[Option[Point]]) {
       .scan[DetectionState](Initial()) {
       case (acc, item) => acc.process(item)
     }
+      .distinctUntilChanged
       .collect{
         case s:Defined => Some(s.gesture)
         case s:Undefined => None
       }
-      .distinctUntilChanged
       .collect {
         case Some(v) => v
       }

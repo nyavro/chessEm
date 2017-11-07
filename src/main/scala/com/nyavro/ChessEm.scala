@@ -6,7 +6,25 @@ import org.scaloid.common._
 class ChessEm extends SActivity {
   lazy val meToo = new STextView("Me too")
   lazy val redBtn = new SButton(R.string.red)
-  lazy val game = new Game(GameConfig(Dimensions(6, 6)), {gesture:Gesture => meToo.text = gesture.toString}, Board(6,6).put(1,1)(Rook).get)
+  lazy val game = new Game(GameConfig(Dimensions(6, 6)), {gesture:Gesture => meToo.text = gesture.toString},
+    Board(6,6)
+      .put(1,1)(Rook)
+      .flatMap(
+      _.put(2,2)(Bishop)
+      )
+      .flatMap(
+        _.put(3,3)(King)
+      )
+      .flatMap(
+        _.put(4,4)(Queen)
+      )
+      .flatMap(
+        _.put(0,0)(Knight)
+      )
+      .flatMap(
+        _.put(5,5)(Knight)
+      )
+      .get)
   lazy val gameSurface = new GameSurface(game)
   lazy val gestureLayout = new SGestureOverlayView
 
