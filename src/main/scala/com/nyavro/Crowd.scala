@@ -8,17 +8,30 @@ class Crowd(direction:Gesture, val list:List[Option[Movable]]){
         val stepsCount = m.stepsCount(direction)
         val move = stepsCount.min(free)
         val (before, after) = acc.splitAt(move)
-        val option = after.headOption
-        val bool = option.fold(false)(item => item.exists(_.canMerge(m)))
-        if(move<stepsCount && bool) {
-          val maybeMovable = after.head.map(v => v.merge(m))
-          (before ++ (Option.empty[Movable] :: maybeMovable :: after.drop(1)), move+1)
+        if(move<stepsCount && after.headOption.fold(false)(item => item.exists(_.canMerge(m)))) {
+          (before ++ (Option.empty[Movable] :: after.head.map(v => v.merge(m)) :: after.drop(1)), move+1)
         }
         else {
           (before ++ (Some(m) :: after), move)
         }
     }
     new Crowd(direction, moved.reverse)
+  }
+
+  def calculateMoves():List[Int] = {
+    val (moves, _, _) = list.foldLeft(List.empty[Int], 0, Option.empty[Movable]) {
+      case ((acc, free, last), None) => (0::acc, free+1, last)
+      case ((acc, free, last), Some(m)) =>
+        val steps = m.stepsCount(direction)
+        val move = steps.min(free)
+        if (move < steps && last.exists(_.canMerge(m))) {
+          ((move+1)::acc, move+1, None)
+        }
+        else {
+          (move::acc, move, Some(m))
+        }
+    }
+    moves.reverse
   }
 
   override def equals(obj: scala.Any): Boolean = obj match {

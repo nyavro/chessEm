@@ -293,6 +293,150 @@ class Board(val cells:Table[Option[Movable]]) {
       case _ => throw new RuntimeException("Not implemented")
     }
 
+  def move(moves:Table[Int], direction: Gesture): Board =
+    direction match {
+      case Left =>
+        new Board(
+          cells.zip(moves).map {
+            case (row, movesRow) =>
+              row
+                .zip(movesRow)
+                .foldLeft(List.empty[Option[Movable]]) {
+                  case (acc, (v, 0)) => v::acc
+                  case (acc, (v, m)) =>
+                    val (before, after) = acc.splitAt(m)
+                    val merged = for {
+                      maybeLast <- before.lastOption
+                      maybeMovable <- maybeLast
+                      maybeMergable <- v
+                      if maybeMovable.canMerge(maybeMergable)
+                    } yield {
+                      maybeMovable.merge(maybeMergable)
+                    }
+                    before ++ ((
+                      if (merged.isDefined)
+                        merged
+                      else
+                        v
+                      )::after)
+                }
+                .reverse
+          }
+        )
+      case Right =>
+        new Board(
+          cells.rotate2().zip(moves).map {
+            case (row, movesRow) =>
+              row
+                .zip(movesRow)
+                .foldLeft(List.empty[Option[Movable]]) {
+                  case (acc, (v, 0)) => v::acc
+                  case (acc, (v, m)) =>
+                    val (before, after) = acc.splitAt(m)
+                    val merged = for {
+                      maybeLast <- before.lastOption
+                      maybeMovable <- maybeLast
+                      maybeMergable <- v
+                      if maybeMovable.canMerge(maybeMergable)
+                    } yield {
+                      maybeMovable.merge(maybeMergable)
+                    }
+                    before ++ ((
+                      if (merged.isDefined)
+                        merged
+                      else
+                        v
+                      )::after)
+                }
+                .reverse
+          }.rotate2()
+        )
+      case Up =>
+        new Board(
+          cells.rotate3().zip(moves).map {
+            case (row, movesRow) =>
+              row
+                .zip(movesRow)
+                .foldLeft(List.empty[Option[Movable]]) {
+                  case (acc, (v, 0)) => v::acc
+                  case (acc, (v, m)) =>
+                    val (before, after) = acc.splitAt(m)
+                    val merged = for {
+                      maybeLast <- before.lastOption
+                      maybeMovable <- maybeLast
+                      maybeMergable <- v
+                      if maybeMovable.canMerge(maybeMergable)
+                    } yield {
+                      maybeMovable.merge(maybeMergable)
+                    }
+                    (
+                      if (merged.isDefined)
+                        None::before.dropRight(1) ++ (merged :: after)
+                      else
+                        before ++ (v :: after)
+                    )
+                }
+                .reverse
+          }.rotate()
+        )
+      case Down =>
+        new Board(
+          cells.rotate().zip(moves).map {
+            case (row, movesRow) =>
+              row
+                .zip(movesRow)
+                .foldLeft(List.empty[Option[Movable]]) {
+                  case (acc, (v, 0)) => v::acc
+                  case (acc, (v, m)) =>
+                    val (before, after) = acc.splitAt(m)
+                    val merged = for {
+                      maybeLast <- before.lastOption
+                      maybeMovable <- maybeLast
+                      maybeMergable <- v
+                      if maybeMovable.canMerge(maybeMergable)
+                    } yield {
+                      maybeMovable.merge(maybeMergable)
+                    }
+                    (
+                      if (merged.isDefined)
+                        None::before.dropRight(1) ++ (merged :: after)
+                      else
+                        before ++ (v :: after)
+                      )
+                }
+                .reverse
+          }.rotate3()
+        )
+      case DownLeft =>
+        new Board(
+          cells.diagonals().zip(moves).map {
+            case (row, movesRow) =>
+              row
+                .zip(movesRow)
+                .foldLeft(List.empty[Option[Movable]]) {
+                  case (acc, (v, 0)) => v::acc
+                  case (acc, (v, m)) =>
+                    val (before, after) = acc.splitAt(m)
+                    val merged = for {
+                      maybeLast <- before.lastOption
+                      maybeMovable <- maybeLast
+                      maybeMergable <- v
+                      if maybeMovable.canMerge(maybeMergable)
+                    } yield {
+                      maybeMovable.merge(maybeMergable)
+                    }
+                    (
+                      if (merged.isDefined)
+                        None::before.dropRight(1) ++ (merged :: after)
+                      else
+                        before ++ (v :: after)
+                      )
+                }
+                .reverse
+          }.fromDiagonals(cells.headOption.fold(0)(_.size))
+        )
+    }
+
   def put(row:Int, col:Int)(piece:Piece):Option[Board] = cells.put(row, col)(Option(piece)).map(new Board(_))
 
   override def toString:String =

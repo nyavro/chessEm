@@ -2,7 +2,7 @@ package com.nyavro
 
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
-object BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with BoardParser {
+class BoardTableMoveTest extends WordSpecLike with Matchers with BeforeAndAfterAll with BoardParser {
 
   "Border conditions" should {
     "met" in {
@@ -15,52 +15,83 @@ object BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with 
   }
 
   "Pawns only" should {
-    val pawnsBoard = parseBoardRows(
-      List(
-        "-v-<>-",
-        "-->--v",
-        "<-v-^^",
-        "-<-^->"
-      )
+    val pawnsBoard = parseRows(
+      "-v-<>-",
+      "-->--v",
+      "<-v-^^",
+      "-<-^->"
     )
     "Move Left" in {
-      pawnsBoard.move(Left).toString should === (
-        parseBoardRows(
-          List(
-            "-v<->-",
-            "-->--v",
-            "<-v-^^",
-            "<--^->"
-          )
+      pawnsBoard.move(
+        parseMovesRows(
+          "...1..",
+          "......",
+          "......",
+          ".1...."
+        ),
+        Left
+      ).toString should === (
+        parseRows(
+          "-v<->-",
+          "-->--v",
+          "<-v-^^",
+          "<--^->"
         ).toString
       )
     }
     "Move Right" in {
-      pawnsBoard.move(Right).toString should === (
-        parseBoardRows(
-          List(
-            "-v-<->",
-            "--->-v",
-            "<-v-^^",
-            "-<-^->"
-          )
+      pawnsBoard
+        .move(
+          parseMovesRows(
+            "......",
+            "......",
+            "...1..",
+            ".1...."
+          ),
+          Right
+        ).toString should === (
+        parseRows(
+          "-v-<->",
+          "--->-v",
+          "<-v-^^",
+          "-<-^->"
         ).toString
       )
     }
     "Move Up" in {
-      pawnsBoard.move(Up).toString should === (
-        parseBoardRows(
-          List(
-            "-v-<>-",
-            "-->-^k",
-            "<-v^--",
-            "-<--->"
-          )
+      pawnsBoard
+        .move(
+          parseMovesRows(
+            "..1.",
+            "..1.",
+            "...1",
+            "....",
+            "....",
+            "...."
+          ),
+          Up
+        ).toString should === (
+        parseRows(
+          "-v-<>-",
+          "-->-^k",
+          "<-v^--",
+          "-<--->"
         ).toString
       )
     }
     "Move Down" in {
-      pawnsBoard.move(Down).toString should === (
+      pawnsBoard
+        .move(
+          parseMovesRows(
+            "....",
+            "...1",
+            ".1..",
+            "....",
+            "....",
+            "..1."
+          ),
+          Down
+        ).toString should === (
         parseBoardRows(
           List(
             "---<>-",
@@ -73,16 +104,28 @@ object BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with 
     }
   }
   "Bishop only" should {
-    val bishopsBoard = parseBoardRows(
-      List(
-        "-----b",
-        "---b--",
-        "b-----",
-        "----b-"
-      )
+    val bishopsBoard = parseRows(
+      "-----b",
+      "---b--",
+      "b-----",
+      "----b-"
     )
     "Move DownLeft" in {
-      bishopsBoard.move(DownLeft).toString should === (
+      bishopsBoard
+        .move(
+          parseMovesRows(
+            ".",
+            "..",
+            "...",
+            "....",
+            "..2.",
+            "...3",
+            "...",
+            "..",
+            "."
+          ),
+          DownLeft
+        ).toString should === (
         parseBoardRows(
           List(
             "------",
@@ -93,6 +136,12 @@ object BoardTest extends WordSpecLike with Matchers with BeforeAndAfterAll with 
         ).toString
       )
     }
+    val bishopsBoard2 = parseRows(
+      "-----b",
+      "---b--",
+      "b-----",
+      "----b-"
+    )
     "Move RightDown" in {
       bishopsBoard.move(RightDown).toString should === (
         parseBoardRows(

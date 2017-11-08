@@ -18,4 +18,12 @@ trait BoardParser {
 
   protected def parseBoardRows(rows:List[String]) = new Board(rows.map(parseBoardRow))
 
+  protected def parseRows(rows: String*) = parseBoardRows(rows.toList)
+
+  private def parseMovesRows(movesString: String):List[Int] = movesString.toList.map {
+    case '.' => 0
+    case v => v.toString.toInt
+  }
+
+  protected def parseMovesRows(rows: String*):Table[Int] = rows.toList.map(parseMovesRows)
 }
